@@ -1,6 +1,8 @@
 import { UrdTimerObserver } from './UrdTimerObserver';
 
 export class UrdUIService implements UrdTimerObserver {
+  private currentTimeLeft: number = 25 * 60;
+
   constructor(private shadowRoot: ShadowRoot | null) {}
 
   async render() {
@@ -16,6 +18,7 @@ export class UrdUIService implements UrdTimerObserver {
     } catch (error) {
       console.error('Error in render:', error);
     }
+    this.update(25 * 60, false);
   }
 
   addButtonListeners(toggleCallback: () => void, resetCallback: () => void) {
@@ -30,9 +33,10 @@ export class UrdUIService implements UrdTimerObserver {
     }
   }
 
-  update(timeLeft: number, isWorking: boolean) {
+  update(timeLeft: number, isRunning: boolean) {
+    this.currentTimeLeft = timeLeft;
     this.updateDisplay(timeLeft);
-    this.updateStartStopButton(isWorking ? 'Pause' : 'Start');
+    this.updateStartStopButton(isRunning);
   }
 
   updateDisplay(timeLeft: number) {
@@ -42,10 +46,14 @@ export class UrdUIService implements UrdTimerObserver {
     }
   }
 
-  updateStartStopButton(text: string) {
+  private updateStartStopButton(isRunning: boolean) {
     const startStopButton = this.shadowRoot?.querySelector('#start-stop');
     if (startStopButton) {
-      startStopButton.textContent = text;
+      if (isRunning) {
+        startStopButton.textContent = 'Pause';
+      } else {
+        startStopButton.textContent = this.currentTimeLeft === 25 * 60 ? 'Start' : 'Resume';
+      }
     }
   }
 

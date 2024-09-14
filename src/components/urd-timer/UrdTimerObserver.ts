@@ -1,3 +1,3 @@
 export interface UrdTimerObserver {
-  update(timeLeft: number, isWorking: boolean): void;
+  update(timeLeft: number, isRunning: boolean): void;
 }

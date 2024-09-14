@@ -4,6 +4,7 @@ export class UrdTimerService {
   private timer: number | null = null;
   private timeLeft: number = 25 * 60;
   private isWorking: boolean = true;
+  private isRunning: boolean = false;
   private observers: UrdTimerObserver[] = [];
 
   addObserver(observer: UrdTimerObserver) {
@@ -19,29 +20,38 @@ export class UrdTimerService {
 
   private notifyObservers() {
     for (const observer of this.observers) {
-      observer.update(this.timeLeft, this.isWorking);
+      observer.update(this.timeLeft, this.isRunning);
     }
   }
 
   toggle() {
-    this.timer ? this.pause() : this.start();
+    if (this.isRunning) {
+      this.pause();
+    } else {
+      this.start();
+    }
+    this.notifyObservers();
   }
 
   reset() {
     this.pause();
     this.timeLeft = 25 * 60;
     this.isWorking = true;
+    this.isRunning = false;
     this.notifyObservers();
   }
 
   private start() {
-    this.timer = window.setInterval(() => {
-      this.timeLeft--;
-      this.notifyObservers();
-      if (this.timeLeft <= 0) {
-        this.switchMode();
-      }
-    }, 1000);
+    if (!this.isRunning) {
+      this.timer = window.setInterval(() => {
+        this.timeLeft--;
+        this.notifyObservers();
+        if (this.timeLeft <= 0) {
+          this.switchMode();
+        }
+      }, 1000);
+      this.isRunning = true;
+    }
   }
 
   private pause() {
@@ -49,7 +59,7 @@ export class UrdTimerService {
       window.clearInterval(this.timer);
       this.timer = null;
     }
-    this.notifyObservers();
+    this.isRunning = false;
   }
 
   private switchMode() {
