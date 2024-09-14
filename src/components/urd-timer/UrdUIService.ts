@@ -1,9 +1,17 @@
 import { UrdTimerObserver } from './UrdTimerObserver';
+import { UrdTimerService } from './UrdTimerService';
 
 export class UrdUIService implements UrdTimerObserver {
   private currentTimeLeft: number = 25 * 60;
+  private workDurationInput: HTMLInputElement | null = null;
+  private shortBreakDurationInput: HTMLInputElement | null = null;
+  private longBreakDurationInput: HTMLInputElement | null = null;
+  private saveSettingsButton: HTMLButtonElement | null = null;
+  private timerService: UrdTimerService;
 
-  constructor(private shadowRoot: ShadowRoot | null) {}
+  constructor(private shadowRoot: ShadowRoot | null, timerService: UrdTimerService) {
+    this.timerService = timerService;
+  }
 
   async render() {
     try {
@@ -15,10 +23,39 @@ export class UrdUIService implements UrdTimerObserver {
       if (this.shadowRoot) {
         this.shadowRoot.innerHTML = `<style>${style}</style>${html}`;
       }
+
+      this.workDurationInput = this.shadowRoot?.querySelector('#work-duration') as HTMLInputElement;
+      this.shortBreakDurationInput = this.shadowRoot?.querySelector('#short-break-duration') as HTMLInputElement;
+      this.longBreakDurationInput = this.shadowRoot?.querySelector('#long-break-duration') as HTMLInputElement;
+      this.saveSettingsButton = this.shadowRoot?.querySelector('#save-settings') as HTMLButtonElement;
+
+      this.addSettingsEventListeners();
     } catch (error) {
       console.error('Error in render:', error);
     }
     this.update(25 * 60, false);
+  }
+
+  private addSettingsEventListeners() {
+    this.saveSettingsButton?.addEventListener('click', () => {
+      const workDuration = this.validateInput(this.workDurationInput, 25);
+      const shortBreakDuration = this.validateInput(this.shortBreakDurationInput, 5);
+      const longBreakDuration = this.validateInput(this.longBreakDurationInput, 15);
+
+      this.updateSettings(workDuration, shortBreakDuration, longBreakDuration);
+    });
+  }
+
+  private updateSettings(workDuration: number, shortBreakDuration: number, longBreakDuration: number) {
+    this.timerService.updateSettings(workDuration, shortBreakDuration, longBreakDuration);
+  }
+
+  private validateInput(input: HTMLInputElement | null, defaultValue: number): number {
+    if (!input) return defaultValue;
+    const value = parseInt(input.value, 10);
+    const min = parseInt(input.min, 10);
+    const max = parseInt(input.max, 10);
+    return isNaN(value) ? defaultValue : Math.max(min, Math.min(max, value));
   }
 
   addButtonListeners(toggleCallback: () => void, resetCallback: () => void) {
@@ -52,7 +89,7 @@ export class UrdUIService implements UrdTimerObserver {
       if (isRunning) {
         startStopButton.textContent = 'Pause';
       } else {
-        startStopButton.textContent = this.currentTimeLeft === 25 * 60 ? 'Start' : 'Resume';
+        startStopButton.textContent = this.currentTimeLeft === this.timerService.getWorkDuration() ? 'Start' : 'Resume';
       }
     }
   }

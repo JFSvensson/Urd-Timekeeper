@@ -6,6 +6,9 @@ export class UrdTimerService {
   private isWorking: boolean = true;
   private isRunning: boolean = false;
   private observers: UrdTimerObserver[] = [];
+  private workDuration: number = 25 * 60;
+  private shortBreakDuration: number = 5 * 60;
+  private longBreakDuration: number = 15 * 60;
 
   addObserver(observer: UrdTimerObserver) {
     this.observers.push(observer);
@@ -24,31 +27,56 @@ export class UrdTimerService {
     }
   }
 
+  updateSettings(workDuration: number, shortBreakDuration: number, longBreakDuration: number) {
+    this.workDuration = workDuration * 60;
+    this.shortBreakDuration = shortBreakDuration * 60;
+    this.longBreakDuration = longBreakDuration * 60;
+    this.saveSettings();
+    this.reset();
+  }
+
+  private saveSettings() {
+    localStorage.setItem('urdTimerSettings', JSON.stringify({
+      workDuration: this.workDuration / 60,
+      shortBreakDuration: this.shortBreakDuration / 60,
+      longBreakDuration: this.longBreakDuration / 60
+    }));
+  }
+
+  loadSettings() {
+    const savedSettings = localStorage.getItem('urdTimerSettings');
+    if (savedSettings) {
+      const settings = JSON.parse(savedSettings);
+      this.workDuration = settings.workDuration * 60;
+      this.shortBreakDuration = settings.shortBreakDuration * 60;
+      this.longBreakDuration = settings.longBreakDuration * 60;
+    }
+    this.reset();
+  }
+
+  reset() {
+    this.timeLeft = this.workDuration;
+    this.isWorking = true;
+    this.pause();
+    this.notifyObservers();
+  }
+
   toggle() {
     if (this.isRunning) {
       this.pause();
     } else {
       this.start();
     }
-    this.notifyObservers();
-  }
-
-  reset() {
-    this.pause();
-    this.timeLeft = 25 * 60;
-    this.isWorking = true;
-    this.isRunning = false;
-    this.notifyObservers();
   }
 
   private start() {
     if (!this.isRunning) {
       this.timer = window.setInterval(() => {
         this.timeLeft--;
-        this.notifyObservers();
         if (this.timeLeft <= 0) {
           this.switchMode();
         }
+        this.notifyObservers();
       }, 1000);
       this.isRunning = true;
     }
@@ -60,6 +88,10 @@ export class UrdTimerService {
       this.timer = null;
     }
     this.isRunning = false;
+  }
+
+  getWorkDuration(): number {
+    return this.workDuration;
   }
 
   private switchMode() {
