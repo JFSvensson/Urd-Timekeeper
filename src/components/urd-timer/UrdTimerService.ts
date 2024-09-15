@@ -3,12 +3,13 @@ import { UrdTimerObserver } from './UrdTimerObserver';
 export class UrdTimerService {
   private timer: number | null = null;
   private timeLeft: number = 25 * 60;
-  private isWorking: boolean = true;
   private isRunning: boolean = false;
   private observers: UrdTimerObserver[] = [];
   private workDuration: number = 25 * 60;
   private shortBreakDuration: number = 5 * 60;
   private longBreakDuration: number = 15 * 60;
+  private currentSession: 'work' | 'shortBreak' | 'longBreak' = 'work';
+  private completedSessions: number = 0;
 
   addObserver(observer: UrdTimerObserver) {
     this.observers.push(observer);
@@ -56,7 +57,6 @@ export class UrdTimerService {
 
   reset() {
     this.timeLeft = this.workDuration;
-    this.isWorking = true;
     this.pause();
     this.notifyObservers();
   }
@@ -67,6 +67,7 @@ export class UrdTimerService {
     } else {
       this.start();
     }
+    this.notifyObservers(); // Lägg till denna rad
   }
 
   private start() {
@@ -95,15 +96,30 @@ export class UrdTimerService {
   }
 
   private switchMode() {
-    this.isWorking = !this.isWorking;
-    this.timeLeft = this.isWorking ? 25 * 60 : 5 * 60;
+    this.completedSessions++;
+    if (this.currentSession === 'work') {
+      if (this.completedSessions % 4 === 0) {
+        this.currentSession = 'longBreak';
+        this.timeLeft = this.longBreakDuration;
+      } else {
+        this.currentSession = 'shortBreak';
+        this.timeLeft = this.shortBreakDuration;
+      }
+    } else {
+      this.currentSession = 'work';
+      this.timeLeft = this.workDuration;
+    }
     this.notifyObservers();
     this.notifyUser();
   }
 
   private notifyUser() {
     if (Notification.permission === 'granted') {
-      new Notification(this.isWorking ? 'Dags att arbeta!' : 'Dags för en paus!');
+      new Notification(this.currentSession === 'work' ? 'Time to work!' : 'Time for a break!');
     }
+  }
+
+  getCurrentSession(): 'work' | 'shortBreak' | 'longBreak' {
+    return this.currentSession;
   }
 }

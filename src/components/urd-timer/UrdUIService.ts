@@ -74,12 +74,33 @@ export class UrdUIService implements UrdTimerObserver {
     this.currentTimeLeft = timeLeft;
     this.updateDisplay(timeLeft);
     this.updateStartStopButton(isRunning);
+    this.updateSessionInfo();
   }
 
-  updateDisplay(timeLeft: number) {
+  private updateDisplay(timeLeft: number) {
     const timeDisplay = this.shadowRoot?.querySelector('#time-display');
     if (timeDisplay) {
       timeDisplay.textContent = this.formatTime(timeLeft);
+    }
+  }
+
+  private updateSessionInfo() {
+    const sessionInfo = this.shadowRoot?.querySelector('#session-info');
+    if (sessionInfo) {
+      const currentSession = this.timerService.getCurrentSession();
+      let sessionText = '';
+      switch (currentSession) {
+        case 'work':
+          sessionText = 'Work Session';
+          break;
+        case 'shortBreak':
+          sessionText = 'Short Break';
+          break;
+        case 'longBreak':
+          sessionText = 'Long Break';
+          break;
+      }
+      sessionInfo.textContent = sessionText;
     }
   }
 
