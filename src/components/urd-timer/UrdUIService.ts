@@ -1,8 +1,9 @@
 import { UrdTimerObserver } from './UrdTimerObserver';
 import { UrdTimerService } from './UrdTimerService';
+import { SECONDS_PER_MINUTE, DEFAULT_WORK_DURATION, DEFAULT_SHORT_BREAK_DURATION, DEFAULT_LONG_BREAK_DURATION, DEFAULT_SHORT_BREAKS_BEFORE_LONG } from './UrdConstants';
 
 export class UrdUIService implements UrdTimerObserver {
-  private currentTimeLeft: number = 25 * 60;
+  private currentTimeLeft: number = DEFAULT_WORK_DURATION * SECONDS_PER_MINUTE;
   private workDurationInput: HTMLInputElement | null = null;
   private shortBreakDurationInput: HTMLInputElement | null = null;
   private longBreakDurationInput: HTMLInputElement | null = null;
@@ -34,15 +35,15 @@ export class UrdUIService implements UrdTimerObserver {
     } catch (error) {
       console.error('Error in render:', error);
     }
-    this.update(25 * 60, false);
+    this.update(DEFAULT_WORK_DURATION * SECONDS_PER_MINUTE, false);
   }
 
   private addSettingsEventListeners() {
     this.saveSettingsButton?.addEventListener('click', () => {
-      const workDuration = this.validateInput(this.workDurationInput, 25);
-      const shortBreakDuration = this.validateInput(this.shortBreakDurationInput, 5);
-      const longBreakDuration = this.validateInput(this.longBreakDurationInput, 15);
-      const shortBreaksBeforeLong = this.validateInput(this.shortBreaksBeforeLongInput, 4);
+      const workDuration = this.validateInput(this.workDurationInput, DEFAULT_WORK_DURATION);
+      const shortBreakDuration = this.validateInput(this.shortBreakDurationInput, DEFAULT_SHORT_BREAK_DURATION);
+      const longBreakDuration = this.validateInput(this.longBreakDurationInput, DEFAULT_LONG_BREAK_DURATION);
+      const shortBreaksBeforeLong = this.validateInput(this.shortBreaksBeforeLongInput, DEFAULT_SHORT_BREAKS_BEFORE_LONG);
 
       this.updateSettings(workDuration, shortBreakDuration, longBreakDuration, shortBreaksBeforeLong);
     });
@@ -118,8 +119,8 @@ export class UrdUIService implements UrdTimerObserver {
   }
 
   private formatTime(seconds: number): string {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
+    const minutes = Math.floor(seconds / SECONDS_PER_MINUTE);
+    const remainingSeconds = seconds % SECONDS_PER_MINUTE;
     return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
   }
 

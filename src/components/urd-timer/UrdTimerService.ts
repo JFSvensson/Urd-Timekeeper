@@ -1,13 +1,14 @@
 import { UrdTimerObserver } from './UrdTimerObserver';
+import { SECONDS_PER_MINUTE, DEFAULT_WORK_DURATION, DEFAULT_SHORT_BREAK_DURATION, DEFAULT_LONG_BREAK_DURATION, DEFAULT_SHORT_BREAKS_BEFORE_LONG } from './UrdConstants';
 
 export class UrdTimerService {
   private timer: number | null = null;
-  private timeLeft: number = 25 * 60;
+  private timeLeft: number = DEFAULT_WORK_DURATION * SECONDS_PER_MINUTE;
   private isRunning: boolean = false;
   private observers: UrdTimerObserver[] = [];
-  private workDuration: number = 25 * 60;
-  private shortBreakDuration: number = 5 * 60;
-  private longBreakDuration: number = 15 * 60;
+  private workDuration: number = DEFAULT_WORK_DURATION * SECONDS_PER_MINUTE;
+  private shortBreakDuration: number = DEFAULT_SHORT_BREAK_DURATION * SECONDS_PER_MINUTE;
+  private longBreakDuration: number = DEFAULT_LONG_BREAK_DURATION * SECONDS_PER_MINUTE;
   private currentSession: 'work' | 'shortBreak' | 'longBreak' = 'work';
   private completedSessions: number = 0;
 
@@ -29,9 +30,9 @@ export class UrdTimerService {
   }
 
   updateSettings(workDuration: number, shortBreakDuration: number, longBreakDuration: number, shortBreaksBeforeLong: number) {
-    this.workDuration = workDuration * 60;
-    this.shortBreakDuration = shortBreakDuration * 60;
-    this.longBreakDuration = longBreakDuration * 60;
+    this.workDuration = workDuration * SECONDS_PER_MINUTE;
+    this.shortBreakDuration = shortBreakDuration * SECONDS_PER_MINUTE;
+    this.longBreakDuration = longBreakDuration * SECONDS_PER_MINUTE;
     this.shortBreaksBeforeLong = shortBreaksBeforeLong;
     this.saveSettings();
     this.reset();
@@ -39,9 +40,9 @@ export class UrdTimerService {
 
   private saveSettings() {
     localStorage.setItem('urdTimerSettings', JSON.stringify({
-      workDuration: this.workDuration / 60,
-      shortBreakDuration: this.shortBreakDuration / 60,
-      longBreakDuration: this.longBreakDuration / 60,
+      workDuration: this.workDuration / SECONDS_PER_MINUTE,
+      shortBreakDuration: this.shortBreakDuration / SECONDS_PER_MINUTE,
+      longBreakDuration: this.longBreakDuration / SECONDS_PER_MINUTE,
       shortBreaksBeforeLong: this.shortBreaksBeforeLong
     }));
   }
@@ -50,9 +51,9 @@ export class UrdTimerService {
     const savedSettings = localStorage.getItem('urdTimerSettings');
     if (savedSettings) {
       const settings = JSON.parse(savedSettings);
-      this.workDuration = settings.workDuration * 60;
-      this.shortBreakDuration = settings.shortBreakDuration * 60;
-      this.longBreakDuration = settings.longBreakDuration * 60;
+      this.workDuration = settings.workDuration * SECONDS_PER_MINUTE;
+      this.shortBreakDuration = settings.shortBreakDuration * SECONDS_PER_MINUTE;
+      this.longBreakDuration = settings.longBreakDuration * SECONDS_PER_MINUTE;
       this.shortBreaksBeforeLong = settings.shortBreaksBeforeLong;
     }
     this.reset();
