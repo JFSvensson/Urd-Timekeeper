@@ -1,4 +1,5 @@
 import { UrdTimerObserver } from './UrdTimerObserver';
+import { SessionType } from './UrdSessionType';
 import { SECONDS_PER_MINUTE, DEFAULT_WORK_DURATION, DEFAULT_SHORT_BREAK_DURATION, DEFAULT_LONG_BREAK_DURATION, DEFAULT_SHORT_BREAKS_BEFORE_LONG } from './UrdConstants';
 
 export class UrdTimerService {
@@ -9,7 +10,7 @@ export class UrdTimerService {
   private workDuration: number = DEFAULT_WORK_DURATION * SECONDS_PER_MINUTE;
   private shortBreakDuration: number = DEFAULT_SHORT_BREAK_DURATION * SECONDS_PER_MINUTE;
   private longBreakDuration: number = DEFAULT_LONG_BREAK_DURATION * SECONDS_PER_MINUTE;
-  private currentSession: 'work' | 'shortBreak' | 'longBreak' = 'work';
+  private currentSession: SessionType = SessionType.Work;
   private completedSessions: number = 0;
 
   addObserver(observer: UrdTimerObserver) {
@@ -101,16 +102,16 @@ export class UrdTimerService {
 
   private switchMode() {
     this.completedSessions++;
-    if (this.currentSession === 'work') {
+    if (this.currentSession === SessionType.Work) {
       if (this.completedSessions % this.shortBreaksBeforeLong === 0) {
-        this.currentSession = 'longBreak';
+        this.currentSession = SessionType.LongBreak;
         this.timeLeft = this.longBreakDuration;
       } else {
-        this.currentSession = 'shortBreak';
+        this.currentSession = SessionType.ShortBreak;
         this.timeLeft = this.shortBreakDuration;
       }
     } else {
-      this.currentSession = 'work';
+      this.currentSession = SessionType.Work;
       this.timeLeft = this.workDuration;
     }
     this.notifyObservers();
@@ -119,7 +120,7 @@ export class UrdTimerService {
 
   private notifyUser() {
     if (Notification.permission === 'granted') {
-      new Notification(this.currentSession === 'work' ? 'Time to work!' : 'Time for a break!');
+      new Notification(this.currentSession === SessionType.Work ? 'Time to work!' : 'Time for a break!');
     }
   }
 

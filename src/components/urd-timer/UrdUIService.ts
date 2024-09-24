@@ -1,5 +1,6 @@
 import { UrdTimerObserver } from './UrdTimerObserver';
 import { UrdTimerService } from './UrdTimerService';
+import { SessionType } from './UrdSessionType';
 import { SECONDS_PER_MINUTE, DEFAULT_WORK_DURATION, DEFAULT_SHORT_BREAK_DURATION, DEFAULT_LONG_BREAK_DURATION, DEFAULT_SHORT_BREAKS_BEFORE_LONG } from './UrdConstants';
 
 export class UrdUIService implements UrdTimerObserver {
@@ -93,13 +94,13 @@ export class UrdUIService implements UrdTimerObserver {
       const currentSession = this.timerService.getCurrentSession();
       let sessionText = '';
       switch (currentSession) {
-        case 'work':
+        case SessionType.Work:
           sessionText = 'Work Session';
           break;
-        case 'shortBreak':
+        case SessionType.ShortBreak:
           sessionText = 'Short Break';
           break;
-        case 'longBreak':
+        case SessionType.LongBreak:
           sessionText = 'Long Break';
           break;
       }
