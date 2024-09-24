@@ -28,10 +28,11 @@ export class UrdTimerService {
     }
   }
 
-  updateSettings(workDuration: number, shortBreakDuration: number, longBreakDuration: number) {
+  updateSettings(workDuration: number, shortBreakDuration: number, longBreakDuration: number, shortBreaksBeforeLong: number) {
     this.workDuration = workDuration * 60;
     this.shortBreakDuration = shortBreakDuration * 60;
     this.longBreakDuration = longBreakDuration * 60;
+    this.shortBreaksBeforeLong = shortBreaksBeforeLong;
     this.saveSettings();
     this.reset();
   }
@@ -40,7 +41,8 @@ export class UrdTimerService {
     localStorage.setItem('urdTimerSettings', JSON.stringify({
       workDuration: this.workDuration / 60,
       shortBreakDuration: this.shortBreakDuration / 60,
-      longBreakDuration: this.longBreakDuration / 60
+      longBreakDuration: this.longBreakDuration / 60,
+      shortBreaksBeforeLong: this.shortBreaksBeforeLong
     }));
   }
 
@@ -51,6 +53,7 @@ export class UrdTimerService {
       this.workDuration = settings.workDuration * 60;
       this.shortBreakDuration = settings.shortBreakDuration * 60;
       this.longBreakDuration = settings.longBreakDuration * 60;
+      this.shortBreaksBeforeLong = settings.shortBreaksBeforeLong;
     }
     this.reset();
   }
@@ -67,7 +70,7 @@ export class UrdTimerService {
     } else {
       this.start();
     }
-    this.notifyObservers(); // Lägg till denna rad
+    this.notifyObservers();
   }
 
   private start() {
@@ -98,7 +101,7 @@ export class UrdTimerService {
   private switchMode() {
     this.completedSessions++;
     if (this.currentSession === 'work') {
-      if (this.completedSessions % 4 === 0) {
+      if (this.completedSessions % this.shortBreaksBeforeLong === 0) {
         this.currentSession = 'longBreak';
         this.timeLeft = this.longBreakDuration;
       } else {

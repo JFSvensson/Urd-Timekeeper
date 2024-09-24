@@ -6,6 +6,7 @@ export class UrdUIService implements UrdTimerObserver {
   private workDurationInput: HTMLInputElement | null = null;
   private shortBreakDurationInput: HTMLInputElement | null = null;
   private longBreakDurationInput: HTMLInputElement | null = null;
+  private shortBreaksBeforeLongInput: HTMLInputElement | null = null;
   private saveSettingsButton: HTMLButtonElement | null = null;
   private timerService: UrdTimerService;
 
@@ -41,13 +42,14 @@ export class UrdUIService implements UrdTimerObserver {
       const workDuration = this.validateInput(this.workDurationInput, 25);
       const shortBreakDuration = this.validateInput(this.shortBreakDurationInput, 5);
       const longBreakDuration = this.validateInput(this.longBreakDurationInput, 15);
+      const shortBreaksBeforeLong = this.validateInput(this.shortBreaksBeforeLongInput, 4);
 
-      this.updateSettings(workDuration, shortBreakDuration, longBreakDuration);
+      this.updateSettings(workDuration, shortBreakDuration, longBreakDuration, shortBreaksBeforeLong);
     });
   }
 
-  private updateSettings(workDuration: number, shortBreakDuration: number, longBreakDuration: number) {
-    this.timerService.updateSettings(workDuration, shortBreakDuration, longBreakDuration);
+  private updateSettings(workDuration: number, shortBreakDuration: number, longBreakDuration: number, shortBreaksBeforeLong: number) {
+    this.timerService.updateSettings(workDuration, shortBreakDuration, longBreakDuration, shortBreaksBeforeLong);
   }
 
   private validateInput(input: HTMLInputElement | null, defaultValue: number): number {
