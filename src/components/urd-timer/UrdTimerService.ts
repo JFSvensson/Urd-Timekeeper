@@ -1,6 +1,6 @@
 import { UrdTimerObserver } from './UrdTimerObserver';
 import { SessionType } from './UrdSessionType';
-import { StorageService } from '../../services/BrowserStorageService';
+import { BrowserStorageService } from '../../services/BrowserStorageService';
 import { SECONDS_PER_MINUTE, DEFAULT_WORK_DURATION, DEFAULT_SHORT_BREAK_DURATION, DEFAULT_LONG_BREAK_DURATION, DEFAULT_SHORT_BREAKS_BEFORE_LONG } from './UrdConstants';
 
 export class UrdTimerService {
@@ -15,7 +15,7 @@ export class UrdTimerService {
   private currentSession: SessionType = SessionType.Work;
   private completedSessions: number = 0;
   
-  constructor(private storageService: StorageService) {}
+  constructor(private storageService: BrowserStorageService) {}
 
   addObserver(observer: UrdTimerObserver) {
     this.observers.push(observer);
