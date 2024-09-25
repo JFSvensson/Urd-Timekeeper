@@ -1,5 +1,6 @@
 import { UrdTimerObserver } from './UrdTimerObserver';
 import { SessionType } from './UrdSessionType';
+import { StorageService } from '../../services/BrowserStorageService';
 import { SECONDS_PER_MINUTE, DEFAULT_WORK_DURATION, DEFAULT_SHORT_BREAK_DURATION, DEFAULT_LONG_BREAK_DURATION, DEFAULT_SHORT_BREAKS_BEFORE_LONG } from './UrdConstants';
 
 export class UrdTimerService {
@@ -13,6 +14,8 @@ export class UrdTimerService {
   private shortBreaksBeforeLong: number = DEFAULT_SHORT_BREAKS_BEFORE_LONG * SECONDS_PER_MINUTE;
   private currentSession: SessionType = SessionType.Work;
   private completedSessions: number = 0;
+  
+  constructor(private storageService: StorageService) {}
 
   addObserver(observer: UrdTimerObserver) {
     this.observers.push(observer);
@@ -41,7 +44,7 @@ export class UrdTimerService {
   }
 
   private saveSettings() {
-    localStorage.setItem('urdTimerSettings', JSON.stringify({
+    this.storageService.setItem('urdTimerSettings', JSON.stringify({
       workDuration: this.workDuration / SECONDS_PER_MINUTE,
       shortBreakDuration: this.shortBreakDuration / SECONDS_PER_MINUTE,
       longBreakDuration: this.longBreakDuration / SECONDS_PER_MINUTE,
@@ -50,7 +53,7 @@ export class UrdTimerService {
   }
 
   loadSettings() {
-    const savedSettings = localStorage.getItem('urdTimerSettings');
+    const savedSettings = this.storageService.getItem('urdTimerSettings');
     if (savedSettings) {
       const settings = JSON.parse(savedSettings);
       this.workDuration = settings.workDuration * SECONDS_PER_MINUTE;

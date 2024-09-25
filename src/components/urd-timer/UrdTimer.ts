@@ -1,5 +1,6 @@
 import { UrdUIService } from './UrdUIService';
 import { UrdTimerService } from './UrdTimerService';
+import { BrowserStorageService } from '../../services/BrowserStorageService';
 
 export class UrdTimer extends HTMLElement {
   private urdTimerService: UrdTimerService;
@@ -8,7 +9,8 @@ export class UrdTimer extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this.urdTimerService = new UrdTimerService();
+    const storageService = new BrowserStorageService();
+    this.urdTimerService = new UrdTimerService(storageService);
     this.urdUIService = new UrdUIService(this.shadowRoot, this.urdTimerService);
     this.urdTimerService.addObserver(this.urdUIService);
   }
