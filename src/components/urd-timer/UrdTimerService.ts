@@ -10,6 +10,7 @@ export class UrdTimerService {
   private workDuration: number = DEFAULT_WORK_DURATION * SECONDS_PER_MINUTE;
   private shortBreakDuration: number = DEFAULT_SHORT_BREAK_DURATION * SECONDS_PER_MINUTE;
   private longBreakDuration: number = DEFAULT_LONG_BREAK_DURATION * SECONDS_PER_MINUTE;
+  private shortBreaksBeforeLong: number = DEFAULT_SHORT_BREAKS_BEFORE_LONG * SECONDS_PER_MINUTE;
   private currentSession: SessionType = SessionType.Work;
   private completedSessions: number = 0;
 
