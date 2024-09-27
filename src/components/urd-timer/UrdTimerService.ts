@@ -1,6 +1,7 @@
 import { UrdTimerObserver } from './UrdTimerObserver';
 import { SessionType } from './UrdSessionType';
-import { BrowserStorageService } from '../../services/BrowserStorageService';
+import { StorageService } from '../../services/StorageService';
+import { MessageService } from '../../services/MessageService';
 import { SECONDS_PER_MINUTE, DEFAULT_WORK_DURATION, DEFAULT_SHORT_BREAK_DURATION, DEFAULT_LONG_BREAK_DURATION, DEFAULT_SHORT_BREAKS_BEFORE_LONG } from './UrdConstants';
 
 export class UrdTimerService {
@@ -15,7 +16,7 @@ export class UrdTimerService {
   private currentSession: SessionType = SessionType.Work;
   private completedSessions: number = 0;
   
-  constructor(private storageService: BrowserStorageService) {}
+  constructor(private storageService: StorageService, private messageService: MessageService) {}
 
   addObserver(observer: UrdTimerObserver) {
     this.observers.push(observer);
@@ -123,9 +124,10 @@ export class UrdTimerService {
   }
 
   private notifyUser() {
-    if (Notification.permission === 'granted') {
-      new Notification(this.currentSession === SessionType.Work ? 'Time to work!' : 'Time for a break!');
-    }
+    const message = this.currentSession === SessionType.Work 
+      ? 'Dags att arbeta!' 
+      : 'Dags för en paus!';
+    this.messageService.showMessage(message);
   }
 
   getCurrentSession(): 'work' | 'shortBreak' | 'longBreak' {

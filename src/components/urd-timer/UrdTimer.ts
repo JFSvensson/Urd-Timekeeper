@@ -1,24 +1,28 @@
 import { UrdUIService } from './UrdUIService';
 import { UrdTimerService } from './UrdTimerService';
+import { StorageService } from '../../services/StorageService';
+import { MessageService } from '../../services/MessageService';
 import { BrowserStorageService } from '../../services/BrowserStorageService';
+import { WebPageMessageService } from '../../services/WebPageMessageService';
 
 export class UrdTimer extends HTMLElement {
-  private urdTimerService: UrdTimerService;
-  private urdUIService: UrdUIService;
+  private timerService: UrdTimerService;
+  private uiService: UrdUIService;
 
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    const storageService = new BrowserStorageService();
-    this.urdTimerService = new UrdTimerService(storageService);
-    this.urdUIService = new UrdUIService(this.shadowRoot, this.urdTimerService);
-    this.urdTimerService.addObserver(this.urdUIService);
+    const storageService: StorageService = new BrowserStorageService();
+    const messageService: MessageService = new WebPageMessageService();
+    this.timerService = new UrdTimerService(storageService, messageService);
+    this.uiService = new UrdUIService(this.shadowRoot, this.timerService);
+    this.timerService.addObserver(this.uiService);
   }
 
   async connectedCallback() {
     try {
-      await this.urdUIService.render();
-      this.urdTimerService.loadSettings();
+      await this.uiService.render();
+      this.timerService.loadSettings();
       this.addEventListeners();
     } catch (error) {
       console.error('Error in connectedCallback:', error);
@@ -26,9 +30,9 @@ export class UrdTimer extends HTMLElement {
   }
 
   private addEventListeners() {
-    this.urdUIService.addButtonListeners(
-      () => this.urdTimerService.toggle(),
-      () => this.urdTimerService.reset()
+    this.uiService.addButtonListeners(
+      () => this.timerService.toggle(),
+      () => this.timerService.reset()
     );
 
     const saveSettingsButton = this.shadowRoot?.querySelector('#save-settings');
