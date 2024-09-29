@@ -1,3 +1,5 @@
+import { MessageService } from './MessageService';
+
 export class WebPageMessageService implements MessageService {
   private messageElement: HTMLElement | null = null;
 
