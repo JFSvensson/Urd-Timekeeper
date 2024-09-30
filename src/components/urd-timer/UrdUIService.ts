@@ -1,5 +1,6 @@
 import { UrdTimerObserver } from './UrdTimerObserver';
 import { UrdTimerService } from './UrdTimerService';
+import { ResourceLoader } from '../../services/ResourceLoader';
 import { SessionType } from './UrdSessionType';
 import { SECONDS_PER_MINUTE, DEFAULT_WORK_DURATION, DEFAULT_SHORT_BREAK_DURATION, DEFAULT_LONG_BREAK_DURATION, DEFAULT_SHORT_BREAKS_BEFORE_LONG } from './UrdConstants';
 
@@ -11,16 +12,17 @@ export class UrdUIService implements UrdTimerObserver {
   private shortBreaksBeforeLongInput: HTMLInputElement | null = null;
   private saveSettingsButton: HTMLButtonElement | null = null;
   private timerService: UrdTimerService;
-
+  private resourceLoader: ResourceLoader;
   constructor(private shadowRoot: ShadowRoot | null, timerService: UrdTimerService) {
     this.timerService = timerService;
+    this.resourceLoader = new ResourceLoader();
   }
 
   async render() {
     try {
       const [style, html] = await Promise.all([
-        this.fetchResource('./UrdTimer.css'),
-        this.fetchResource('./UrdTimer.html')
+        this.resourceLoader.fetchResource('./UrdTimer.css'),
+        this.resourceLoader.fetchResource('./UrdTimer.html')
       ]);
 
       if (this.shadowRoot) {
@@ -123,13 +125,5 @@ export class UrdUIService implements UrdTimerObserver {
     const minutes = Math.floor(seconds / SECONDS_PER_MINUTE);
     const remainingSeconds = seconds % SECONDS_PER_MINUTE;
     return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
-  }
-
-  private async fetchResource(url: string): Promise<string> {
-    const response = await fetch(new URL(url, import.meta.url));
-    if (!response.ok) {
-      throw new Error(`Failed to fetch ${url}: ${response.statusText}`);
-    }
-    return response.text();
   }
 }
