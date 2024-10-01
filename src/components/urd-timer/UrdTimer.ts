@@ -4,18 +4,21 @@ import { StorageService } from '../../services/StorageService';
 import { MessageService } from '../../services/MessageService';
 import { BrowserStorageService } from '../../services/BrowserStorageService';
 import { WebPageMessageService } from '../../services/WebPageMessageService';
+import { ResourceLoader } from '../../services/ResourceLoader';
 
 export class UrdTimer extends HTMLElement {
   private timerService: UrdTimerService;
   private uiService: UrdUIService;
 
-  constructor() {
+  constructor(
+    storageService: StorageService = new BrowserStorageService(),
+    messageService: MessageService = new WebPageMessageService(),
+    resourceLoader: ResourceLoader = new ResourceLoader()
+  ) {
     super();
     this.attachShadow({ mode: 'open' });
-    const storageService: StorageService = new BrowserStorageService();
-    const messageService: MessageService = new WebPageMessageService();
     this.timerService = new UrdTimerService(storageService, messageService);
-    this.uiService = new UrdUIService(this.shadowRoot, this.timerService);
+    this.uiService = new UrdUIService(this.shadowRoot, this.timerService, resourceLoader);
     this.timerService.addObserver(this.uiService);
   }
 
@@ -40,7 +43,8 @@ export class UrdTimer extends HTMLElement {
       const workDuration = this.getInputValue('#work-duration', 25);
       const shortBreakDuration = this.getInputValue('#short-break-duration', 5);
       const longBreakDuration = this.getInputValue('#long-break-duration', 15);
-      this.urdTimerService.updateSettings(workDuration, shortBreakDuration, longBreakDuration);
+      const shortBreaksBeforeLong = this.getInputValue('#short-breaks-before-long', 4);
+      this.timerService.updateSettings(workDuration, shortBreakDuration, longBreakDuration, shortBreaksBeforeLong);
     });
   }
 
