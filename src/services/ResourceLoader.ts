@@ -1,9 +1,30 @@
 export class ResourceLoader {
-  async fetchResource(url: string): Promise<string> {
-    const response = await fetch(new URL(url, import.meta.url));
-    if (!response.ok) {
-      throw new Error(`Failed to fetch ${url}: ${response.statusText}`);
+  private baseUrl: string;
+
+  constructor(baseUrl: string = import.meta.url) {
+    this.baseUrl = baseUrl;
+  }
+
+  async fetchResource(path: string): Promise<string> {
+    const url = new URL(path, this.baseUrl).href;
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return await response.text();
+    } catch (error) {
+      console.error('Failed to fetch resource:', url, error);
+      throw new Error(`Failed to fetch ${path}: ${error}`);
     }
-    return response.text();
+  }
+
+  setBaseUrl(newBaseUrl: string) {
+    this.baseUrl = newBaseUrl;
+  }
+
+  getBaseUrl(): string {
+    return this.baseUrl;
   }
 }
