@@ -5,17 +5,40 @@ import { SessionType } from './UrdSessionType';
 import { SECONDS_PER_MINUTE, DEFAULT_WORK_DURATION, DEFAULT_SHORT_BREAK_DURATION, DEFAULT_LONG_BREAK_DURATION, DEFAULT_SHORT_BREAKS_BEFORE_LONG } from './UrdConstants';
 
 export class UrdUIService implements UrdTimerObserver {
-  private currentTimeLeft: number = DEFAULT_WORK_DURATION * SECONDS_PER_MINUTE;
-  private workDurationInput: HTMLInputElement | null = null;
-  private shortBreakDurationInput: HTMLInputElement | null = null;
-  private longBreakDurationInput: HTMLInputElement | null = null;
-  private shortBreaksBeforeLongInput: HTMLInputElement | null = null;
+  private readonly INITIAL_TIME_LEFT: number = DEFAULT_WORK_DURATION * SECONDS_PER_MINUTE;
+  private currentTimeLeft: number = this.INITIAL_TIME_LEFT;
+
+
+  private inputElements = {
+    workDuration: null as HTMLInputElement | null,
+    shortBreakDuration: null as HTMLInputElement | null,
+    longBreakDuration: null as HTMLInputElement | null,
+    shortBreaksBeforeLong: null as HTMLInputElement | null
+  };
   private saveSettingsButton: HTMLButtonElement | null = null;
-  private timerService: UrdTimerService;
-  private resourceLoader: ResourceLoader;
-  constructor(private shadowRoot: ShadowRoot | null, timerService: UrdTimerService) {
-    this.timerService = timerService;
-    this.resourceLoader = new ResourceLoader();
+
+  constructor(
+    private shadowRoot: ShadowRoot | null, 
+    private timerService: UrdTimerService, 
+    private resourceLoader: ResourceLoader
+  ) {
+    this.resourceLoader.setBaseUrl(import.meta.url);
+  }
+
+  private initializeDOMElements() {
+    this.inputElements.workDuration = this.shadowRoot?.querySelector('#work-duration') as HTMLInputElement;
+    this.inputElements.shortBreakDuration = this.shadowRoot?.querySelector('#short-break-duration') as HTMLInputElement;
+    this.inputElements.longBreakDuration = this.shadowRoot?.querySelector('#long-break-duration') as HTMLInputElement;
+    this.inputElements.shortBreaksBeforeLong = this.shadowRoot?.querySelector('#short-breaks-before-long') as HTMLInputElement;
+    this.saveSettingsButton = this.shadowRoot?.querySelector('#save-settings') as HTMLButtonElement;
+  }
+
+  private async renderContent(style: string, html: string) {
+    if (this.shadowRoot) {
+      this.shadowRoot.innerHTML = `<style>${style}</style>${html}`;
+    }
+    this.initializeDOMElements();
+    this.addSettingsEventListeners();
   }
 
   async render() {
@@ -24,31 +47,31 @@ export class UrdUIService implements UrdTimerObserver {
         this.resourceLoader.fetchResource('./UrdTimer.css'),
         this.resourceLoader.fetchResource('./UrdTimer.html')
       ]);
-
-      if (this.shadowRoot) {
-        this.shadowRoot.innerHTML = `<style>${style}</style>${html}`;
-      }
-
-      this.workDurationInput = this.shadowRoot?.querySelector('#work-duration') as HTMLInputElement;
-      this.shortBreakDurationInput = this.shadowRoot?.querySelector('#short-break-duration') as HTMLInputElement;
-      this.longBreakDurationInput = this.shadowRoot?.querySelector('#long-break-duration') as HTMLInputElement;
-      this.saveSettingsButton = this.shadowRoot?.querySelector('#save-settings') as HTMLButtonElement;
-
-      this.addSettingsEventListeners();
+      await this.renderContent(style, html);
+      this.update(this.INITIAL_TIME_LEFT, false);
     } catch (error) {
       console.error('Error in render:', error);
     }
-    this.update(DEFAULT_WORK_DURATION * SECONDS_PER_MINUTE, false);
+  }
+
+  private getUpdatedSettings(): { [key: string]: number } {
+    return {
+      workDuration: this.validateInput(this.inputElements.workDuration, DEFAULT_WORK_DURATION),
+      shortBreakDuration: this.validateInput(this.inputElements.shortBreakDuration, DEFAULT_SHORT_BREAK_DURATION),
+      longBreakDuration: this.validateInput(this.inputElements.longBreakDuration, DEFAULT_LONG_BREAK_DURATION),
+      shortBreaksBeforeLong: this.validateInput(this.inputElements.shortBreaksBeforeLong, DEFAULT_SHORT_BREAKS_BEFORE_LONG)
+    };
   }
 
   private addSettingsEventListeners() {
     this.saveSettingsButton?.addEventListener('click', () => {
-      const workDuration = this.validateInput(this.workDurationInput, DEFAULT_WORK_DURATION);
-      const shortBreakDuration = this.validateInput(this.shortBreakDurationInput, DEFAULT_SHORT_BREAK_DURATION);
-      const longBreakDuration = this.validateInput(this.longBreakDurationInput, DEFAULT_LONG_BREAK_DURATION);
-      const shortBreaksBeforeLong = this.validateInput(this.shortBreaksBeforeLongInput, DEFAULT_SHORT_BREAKS_BEFORE_LONG);
-
-      this.updateSettings(workDuration, shortBreakDuration, longBreakDuration, shortBreaksBeforeLong);
+      const settings = this.getUpdatedSettings();
+      this.timerService.updateSettings(
+        settings.workDuration,
+        settings.shortBreakDuration,
+        settings.longBreakDuration,
+        settings.shortBreaksBeforeLong
+      );
     });
   }
 
