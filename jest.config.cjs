@@ -1,4 +1,11 @@
 module.exports = {
+  globals: {
+    'ts-jest': {
+      tsconfig: 'tsconfig.json',
+      useESM: true,
+    },
+  },
+  extensionsToTreatAsEsm: ['.ts'],
   preset: 'ts-jest',
   testEnvironment: 'jest-environment-jsdom',
   roots: ['<rootDir>/src', '<rootDir>/tests'],
