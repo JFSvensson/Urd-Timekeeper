@@ -52,6 +52,7 @@ export class UrdUIService implements UrdTimerObserver {
       this.update(this.INITIAL_TIME_LEFT, false);
     } catch (error) {
       console.error('Error in render:', error);
+      throw error;
     }
   }
 
