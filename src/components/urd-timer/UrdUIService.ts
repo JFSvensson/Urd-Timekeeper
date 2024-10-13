@@ -20,9 +20,10 @@ export class UrdUIService implements UrdTimerObserver {
   constructor(
     private shadowRoot: ShadowRoot | null, 
     private timerService: UrdTimerService, 
-    private resourceLoader: ResourceLoader
+    private resourceLoader: ResourceLoader,
+    baseUrl: string = import.meta.url
   ) {
-    this.resourceLoader.setBaseUrl(import.meta.url);
+    this.resourceLoader.setBaseUrl(baseUrl);
   }
 
   private initializeDOMElements() {
@@ -66,7 +67,7 @@ export class UrdUIService implements UrdTimerObserver {
   private addSettingsEventListeners() {
     this.saveSettingsButton?.addEventListener('click', () => {
       const settings = this.getUpdatedSettings();
-      this.timerService.updateSettings(
+      this.updateSettings(
         settings.workDuration,
         settings.shortBreakDuration,
         settings.longBreakDuration,
