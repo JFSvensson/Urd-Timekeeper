@@ -23,13 +23,17 @@ export class UrdTimer extends HTMLElement {
   }
 
   async connectedCallback() {
-    try {
-      await this.uiService.render();
-      this.timerService.loadSettings();
-      this.addEventListeners();
-    } catch (error) {
-      console.error('Error in connectedCallback:', error);
+    if (!this.shadowRoot) {
+      this.attachShadow({ mode: 'open' });
     }
+
+    await this.uiService.render();
+    this.timerService.loadSettings();
+    await this.addEventListeners();
+  }
+
+  disconnectedCallback() {
+    this.uiService.removeKeyboardListener();
   }
 
   private addEventListeners() {

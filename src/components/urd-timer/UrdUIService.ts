@@ -50,10 +50,20 @@ export class UrdUIService implements UrdTimerObserver {
       ]);
       await this.renderContent(style, html);
       this.update(this.INITIAL_TIME_LEFT, false);
+      this.initializeDOMElements();
+      this.addSettingsEventListeners();
+      this.addKeyboardListener();
+      this.renderKeyboardShortcutInfo();
     } catch (error) {
-      console.error('Error in render:', error);
-      throw error;
+      console.error('Error rendering UrdUIService:', error);
     }
+  }
+
+  private renderKeyboardShortcutInfo() {
+    const shortcutInfo = document.createElement('div');
+    shortcutInfo.className = 'keyboard-shortcut';
+    shortcutInfo.textContent = 'Press space to start/pause';
+    this.shadowRoot?.appendChild(shortcutInfo);
   }
 
   private getUpdatedSettings(): { [key: string]: number } {
@@ -150,5 +160,20 @@ export class UrdUIService implements UrdTimerObserver {
     const minutes = Math.floor(seconds / SECONDS_PER_MINUTE);
     const remainingSeconds = seconds % SECONDS_PER_MINUTE;
     return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+  }
+
+  private handleKeyPress = (event: KeyboardEvent) => {
+    if (event.code === 'Space' || event.key === ' ') {
+      event.preventDefault();
+      this.timerService.toggle();
+    }
+  }
+
+  addKeyboardListener() {
+    document.addEventListener('keydown', this.handleKeyPress);
+  }
+
+  removeKeyboardListener() {
+    document.removeEventListener('keydown', this.handleKeyPress);
   }
 }

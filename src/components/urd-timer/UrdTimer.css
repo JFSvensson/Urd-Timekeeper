@@ -14,3 +14,10 @@ button {
   padding: 10px 20px;
   margin: 0 10px;
 }
+
+.keyboard-shortcut {
+  font-size: 0.8em;
+  color: #666;
+  margin-top: 10px;
+  text-align: center;
+}
