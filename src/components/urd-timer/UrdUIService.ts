@@ -3,6 +3,7 @@ import { UrdTimerService } from './UrdTimerService';
 import { ResourceLoader } from '../../services/ResourceLoader';
 import { SessionType } from './UrdSessionType';
 import { SECONDS_PER_MINUTE, DEFAULT_WORK_DURATION, DEFAULT_SHORT_BREAK_DURATION, DEFAULT_LONG_BREAK_DURATION, DEFAULT_SHORT_BREAKS_BEFORE_LONG } from './UrdConstants';
+import styles from './UrdTimer.css?inline';
 
 export class UrdUIService implements UrdTimerObserver {
   private readonly INITIAL_TIME_LEFT: number = DEFAULT_WORK_DURATION * SECONDS_PER_MINUTE;
@@ -34,9 +35,12 @@ export class UrdUIService implements UrdTimerObserver {
     this.saveSettingsButton = this.shadowRoot?.querySelector('#save-settings') as HTMLButtonElement;
   }
 
-  private async renderContent(style: string, html: string) {
+  private async renderContent(html: string) {
     if (this.shadowRoot) {
-      this.shadowRoot.innerHTML = `<style>${style}</style>${html}`;
+      const sheet = new CSSStyleSheet();
+      await sheet.replace(styles);
+      this.shadowRoot.adoptedStyleSheets = [sheet];
+      this.shadowRoot.innerHTML = html;
     }
     this.initializeDOMElements();
     this.addSettingsEventListeners();
@@ -44,11 +48,8 @@ export class UrdUIService implements UrdTimerObserver {
 
   async render() {
     try {
-      const [style, html] = await Promise.all([
-        this.resourceLoader.fetchResource('./UrdTimer.css'),
-        this.resourceLoader.fetchResource('./UrdTimer.html')
-      ]);
-      await this.renderContent(style, html);
+      const html = await this.resourceLoader.fetchResource('./UrdTimer.html');
+      await this.renderContent(html);
       this.update(this.INITIAL_TIME_LEFT, false);
       this.initializeDOMElements();
       this.addSettingsEventListeners();
