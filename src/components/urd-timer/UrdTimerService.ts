@@ -133,4 +133,8 @@ export class UrdTimerService {
   getCurrentSession(): 'work' | 'shortBreak' | 'longBreak' {
     return this.currentSession;
   }
+
+  getCompletedSessions(): number {
+    return this.completedSessions;
+  }
 }
