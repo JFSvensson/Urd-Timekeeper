@@ -27,6 +27,7 @@ export class UrdUIService implements UrdTimerObserver {
     this.updateDisplay(timeLeft);
     this.updateStartStopButton(isRunning);
     this.updateSessionInfo();
+    this.updateProgressRing(timeLeft);
   }
 
   // Implementera andra nödvändiga metoder här, som updateDisplay, updateStartStopButton, etc.
@@ -68,10 +69,66 @@ export class UrdUIService implements UrdTimerObserver {
 
   private updateSessionInfo(): void {
     const sessionInfo = this.shadowRoot.querySelector('#session-info');
+    const progressCircle = this.shadowRoot.querySelector('.progress-ring__circle');
+    
     if (sessionInfo) {
       const sessionType = this.timerService.getCurrentSession();
       const sessionCount = this.timerService.getCompletedSessions();
-      sessionInfo.textContent = `${sessionType} - Pomodoros: ${sessionCount}`;
+      
+      let sessionLabel = '';
+      let colorClass = '';
+      
+      switch (sessionType) {
+        case 'work':
+          sessionLabel = 'Arbete';
+          colorClass = 'work';
+          break;
+        case 'shortBreak':
+          sessionLabel = 'Kort paus';
+          colorClass = 'short-break';
+          break;
+        case 'longBreak':
+          sessionLabel = 'Lång paus';
+          colorClass = 'long-break';
+          break;
+      }
+      
+      sessionInfo.textContent = `${sessionLabel} · Pomodoros: ${sessionCount}`;
+      
+      // Update progress ring color based on session type
+      if (progressCircle) {
+        progressCircle.classList.remove('work', 'short-break', 'long-break');
+        progressCircle.classList.add(colorClass);
+      }
     }
+  }
+
+  private updateProgressRing(timeLeft: number): void {
+    const circle = this.shadowRoot.querySelector('.progress-ring__circle') as SVGCircleElement;
+    if (!circle) return;
+
+    const radius = 140;
+    const circumference = 2 * Math.PI * radius;
+    
+    // Get total duration for current session
+    const sessionType = this.timerService.getCurrentSession();
+    let totalSeconds = 0;
+    
+    switch (sessionType) {
+      case 'work':
+        totalSeconds = this.timerService.getWorkDuration();
+        break;
+      case 'shortBreak':
+        totalSeconds = this.timerService.getShortBreakDuration();
+        break;
+      case 'longBreak':
+        totalSeconds = this.timerService.getLongBreakDuration();
+        break;
+    }
+    
+    const progress = timeLeft / totalSeconds;
+    const offset = circumference * (1 - progress);
+    
+    circle.style.strokeDashoffset = offset.toString();
   }
 }
