@@ -141,9 +141,9 @@ export class UrdUIService implements UrdTimerObserver {
     
     // Calculate how much of the circle should be VISIBLE (not hidden)
     // When timeLeft = totalSeconds (full time), we want offset = 0 (full circle visible)
-    // When timeLeft = 0 (no time), we want offset = circumference (circle hidden)
+    // When timeLeft = 0 (no time), we want offset = -circumference (circle hidden, clockwise)
     const progress = timeLeft / totalSeconds;
-    const offset = circumference * (1 - progress);
+    const offset = circumference * (progress - 1); // Negative offset for clockwise direction
     
     // Use setAttribute for SVG properties (more reliable than style)
     circle.setAttribute('stroke-dashoffset', offset.toString());
