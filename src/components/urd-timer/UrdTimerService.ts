@@ -105,6 +105,14 @@ export class UrdTimerService {
     return this.workDuration;
   }
 
+  getShortBreakDuration(): number {
+    return this.shortBreakDuration;
+  }
+
+  getLongBreakDuration(): number {
+    return this.longBreakDuration;
+  }
+
   private switchMode() {
     this.completedSessions++;
     if (this.currentSession === SessionType.Work) {
