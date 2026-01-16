@@ -1,22 +1,33 @@
 import { UrdTimerObserver } from './UrdTimerObserver';
 import { SessionType } from './UrdSessionType';
-import { StorageService } from '../../services/StorageService';
 import { MessageService } from '../../services/MessageService';
-import { SECONDS_PER_MINUTE, DEFAULT_WORK_DURATION, DEFAULT_SHORT_BREAK_DURATION, DEFAULT_LONG_BREAK_DURATION, DEFAULT_SHORT_BREAKS_BEFORE_LONG } from './UrdConstants';
+import { UrdSettingsManager } from './UrdSettingsManager';
+import { SECONDS_PER_MINUTE } from './UrdConstants';
 
 export class UrdTimerService {
   private timer: number | null = null;
-  private timeLeft: number = DEFAULT_WORK_DURATION * SECONDS_PER_MINUTE;
+  private timeLeft: number;
   private isRunning: boolean = false;
   private observers: UrdTimerObserver[] = [];
-  private workDuration: number = DEFAULT_WORK_DURATION * SECONDS_PER_MINUTE;
-  private shortBreakDuration: number = DEFAULT_SHORT_BREAK_DURATION * SECONDS_PER_MINUTE;
-  private longBreakDuration: number = DEFAULT_LONG_BREAK_DURATION * SECONDS_PER_MINUTE;
-  private shortBreaksBeforeLong: number = DEFAULT_SHORT_BREAKS_BEFORE_LONG;
+  private workDuration: number;
+  private shortBreakDuration: number;
+  private longBreakDuration: number;
+  private shortBreaksBeforeLong: number;
   private currentSession: SessionType = SessionType.Work;
   private completedSessions: number = 0;
   
-  constructor(private storageService: StorageService, private messageService: MessageService) {}
+  constructor(
+    private settingsManager: UrdSettingsManager,
+    private messageService: MessageService
+  ) {
+    const settings = this.settingsManager.loadSettings();
+    const settingsInSeconds = this.settingsManager.getSettingsInSeconds(settings);
+    this.workDuration = settingsInSeconds.workDuration;
+    this.shortBreakDuration = settingsInSeconds.shortBreakDuration;
+    this.longBreakDuration = settingsInSeconds.longBreakDuration;
+    this.shortBreaksBeforeLong = settingsInSeconds.shortBreaksBeforeLong;
+    this.timeLeft = this.workDuration;
+  }
 
   addObserver(observer: UrdTimerObserver) {
     this.observers.push(observer);
@@ -36,40 +47,33 @@ export class UrdTimerService {
   }
 
   updateSettings(workDuration: number, shortBreakDuration: number, longBreakDuration: number, shortBreaksBeforeLong: number) {
-    this.workDuration = workDuration * SECONDS_PER_MINUTE;
-    this.shortBreakDuration = shortBreakDuration * SECONDS_PER_MINUTE;
-    this.longBreakDuration = longBreakDuration * SECONDS_PER_MINUTE;
-    this.shortBreaksBeforeLong = shortBreaksBeforeLong;
-    this.saveSettings();
+    const settings = {
+      workDuration,
+      shortBreakDuration,
+      longBreakDuration,
+      shortBreaksBeforeLong
+    };
+    
+    this.settingsManager.saveSettings(settings);
+    const settingsInSeconds = this.settingsManager.getSettingsInSeconds(settings);
+    
+    this.workDuration = settingsInSeconds.workDuration;
+    this.shortBreakDuration = settingsInSeconds.shortBreakDuration;
+    this.longBreakDuration = settingsInSeconds.longBreakDuration;
+    this.shortBreaksBeforeLong = settingsInSeconds.shortBreaksBeforeLong;
+    
     this.reset();
   }
 
-  private saveSettings() {
-    try {
-      this.storageService.setItem('urdTimerSettings', JSON.stringify({
-        workDuration: this.workDuration / SECONDS_PER_MINUTE,
-        shortBreakDuration: this.shortBreakDuration / SECONDS_PER_MINUTE,
-        longBreakDuration: this.longBreakDuration / SECONDS_PER_MINUTE,
-        shortBreaksBeforeLong: this.shortBreaksBeforeLong
-      }));
-    } catch (error) {
-      console.error('Failed to save timer settings:', error);
-    }
-  }
-
   loadSettings() {
-    try {
-      const savedSettings = this.storageService.getItem('urdTimerSettings');
-      if (savedSettings) {
-        const settings = JSON.parse(savedSettings);
-        this.workDuration = settings.workDuration * SECONDS_PER_MINUTE;
-        this.shortBreakDuration = settings.shortBreakDuration * SECONDS_PER_MINUTE;
-        this.longBreakDuration = settings.longBreakDuration * SECONDS_PER_MINUTE;
-        this.shortBreaksBeforeLong = settings.shortBreaksBeforeLong;
-      }
-    } catch (error) {
-      console.error('Failed to load timer settings, using defaults:', error);
-    }
+    const settings = this.settingsManager.loadSettings();
+    const settingsInSeconds = this.settingsManager.getSettingsInSeconds(settings);
+    
+    this.workDuration = settingsInSeconds.workDuration;
+    this.shortBreakDuration = settingsInSeconds.shortBreakDuration;
+    this.longBreakDuration = settingsInSeconds.longBreakDuration;
+    this.shortBreaksBeforeLong = settingsInSeconds.shortBreaksBeforeLong;
+    
     this.reset();
   }
 
