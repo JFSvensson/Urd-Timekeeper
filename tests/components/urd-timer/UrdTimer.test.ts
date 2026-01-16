@@ -3,7 +3,6 @@ import { UrdTimerService } from '../../../src/components/urd-timer/UrdTimerServi
 import { UrdUIService } from '../../../src/components/urd-timer/UrdUIService';
 import { BrowserStorageService } from '../../../src/services/BrowserStorageService';
 import { WebPageMessageService } from '../../../src/services/WebPageMessageService';
-import { ResourceLoader } from '../../../src/services/ResourceLoader';
 
 jest.mock('../../../src/components/urd-timer/UrdTimerService');
 jest.mock('../../../src/components/urd-timer/UrdUIRenderer');
@@ -22,34 +21,16 @@ jest.mock('../../../src/components/urd-timer/UrdUIService', () => {
 jest.mock('../../../src/services/BrowserStorageService');
 jest.mock('../../../src/services/WebPageMessageService');
 
-jest.mock('../../../src/services/ResourceLoader', () => {
-  return {
-    ResourceLoader: jest.fn().mockImplementation(() => ({
-      fetchResource: jest.fn().mockImplementation(async (url: string) => {
-        console.log(`Mocking fetch for: ${url}`);
-        if (url.endsWith('.css')) {
-          return 'mocked-css-content';
-        } else if (url.endsWith('.html')) {
-          return '<div>mocked-html-content</div>';
-        }
-        throw new Error('Unknown resource');
-      })
-    }))
-  };
-});
-
 describe('UrdTimer', () => {
   let timer: UrdTimer;
   let mockTimerService: jest.Mocked<UrdTimerService>;
   let mockUIService: jest.Mocked<UrdUIService>;
   let mockStorageService: jest.Mocked<BrowserStorageService>;
   let mockMessageService: jest.Mocked<WebPageMessageService>;
-  let mockResourceLoader: jest.Mocked<ResourceLoader>;
 
   beforeEach(() => {
     mockStorageService = jest.mocked(new BrowserStorageService());
     mockMessageService = jest.mocked(new WebPageMessageService());
-    mockResourceLoader = jest.mocked(new ResourceLoader());
   
     mockTimerService = jest.mocked(new UrdTimerService(mockStorageService, mockMessageService));
     mockUIService = jest.mocked(new UrdUIService(null as any, mockTimerService, null as any, null as any));
@@ -57,7 +38,7 @@ describe('UrdTimer', () => {
     (UrdTimerService as jest.MockedClass<typeof UrdTimerService>).mockImplementation(() => mockTimerService);
     (UrdUIService as jest.MockedClass<typeof UrdUIService>).mockImplementation(() => mockUIService);
   
-    timer = new UrdTimer(mockStorageService, mockMessageService, mockResourceLoader);
+    timer = new UrdTimer(mockStorageService, mockMessageService);
   });
 
   test('should initialize correctly', () => {
