@@ -5,6 +5,8 @@ import { MessageService } from '../../services/MessageService';
 import { BrowserStorageService } from '../../services/BrowserStorageService';
 import { WebPageMessageService } from '../../services/WebPageMessageService';
 import { ResourceLoader } from '../../services/ResourceLoader';
+import { UrdUIRenderer } from './UrdUIRenderer';
+import { UrdUIDOMHandler } from './UrdUIDOMHandler';
 
 export class UrdTimer extends HTMLElement {
   private timerService: UrdTimerService;
@@ -16,9 +18,11 @@ export class UrdTimer extends HTMLElement {
     resourceLoader: ResourceLoader = new ResourceLoader()
   ) {
     super();
-    this.attachShadow({ mode: 'open' });
+    const shadow = this.attachShadow({ mode: 'open' });
     this.timerService = new UrdTimerService(storageService, messageService);
-    this.uiService = new UrdUIService(this.shadowRoot, this.timerService, resourceLoader);
+    const uiRenderer = new UrdUIRenderer(shadow, resourceLoader);
+    const domHandler = new UrdUIDOMHandler(shadow, this.timerService);
+    this.uiService = new UrdUIService(shadow, this.timerService, uiRenderer, domHandler);
     this.timerService.addObserver(this.uiService);
   }
 
@@ -27,7 +31,7 @@ export class UrdTimer extends HTMLElement {
       this.attachShadow({ mode: 'open' });
     }
 
-    await this.uiService.render();
+    await this.uiService.initialize();
     this.timerService.loadSettings();
     await this.addEventListeners();
   }
