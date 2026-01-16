@@ -1,23 +1,154 @@
 .urd-timer {
-  font-family: Arial, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   text-align: center;
   padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+h1 {
+  color: #333;
+  margin-bottom: 30px;
+}
+
+#timer-container {
+  position: relative;
+  display: inline-block;
+  margin: 20px 0;
+}
+
+.progress-ring {
+  display: block;
+}
+
+.progress-ring__circle {
+  transition: stroke-dashoffset 0.35s;
+  transform-origin: 50% 50%;
+}
+
+.progress-ring__circle-bg {
+  opacity: 0.3;
+}
+
+.timer-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  width: 100%;
+}
+
+#session-info {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 10px;
+  font-weight: 500;
 }
 
 #time-display {
-  font-size: 48px;
-  margin: 20px 0;
+  font-size: 56px;
+  font-weight: bold;
+  color: #333;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
 }
 
 button {
   font-size: 18px;
-  padding: 10px 20px;
-  margin: 0 10px;
+  padding: 12px 30px;
+  margin: 10px 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+#start-stop {
+  background-color: #4CAF50;
+  color: white;
+}
+
+#start-stop:hover {
+  background-color: #45a049;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+#reset {
+  background-color: #f44336;
+  color: white;
+}
+
+#reset:hover {
+  background-color: #da190b;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+button:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.settings {
+  margin-top: 40px;
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 10px;
+  text-align: left;
+}
+
+.settings label {
+  display: block;
+  margin-top: 15px;
+  margin-bottom: 5px;
+  color: #555;
+  font-weight: 500;
+}
+
+.settings input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.settings input:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+}
+
+#save-settings {
+  width: 100%;
+  margin-top: 20px;
+  background-color: #2196F3;
+}
+
+#save-settings:hover {
+  background-color: #0b7dda;
 }
 
 .keyboard-shortcut {
-  font-size: 0.8em;
-  color: #666;
-  margin-top: 10px;
+  font-size: 0.9em;
+  color: #888;
+  margin-top: 15px;
   text-align: center;
+  font-style: italic;
+}
+
+/* Color variations for different session types */
+.progress-ring__circle.work {
+  stroke: #4CAF50;
+}
+
+.progress-ring__circle.short-break {
+  stroke: #2196F3;
+}
+
+.progress-ring__circle.long-break {
+  stroke: #FF9800;
 }
