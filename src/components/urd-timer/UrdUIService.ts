@@ -106,17 +106,14 @@ export class UrdUIService implements UrdTimerObserver {
 
   private setupProgressRing(): void {
     const circle = this.shadowRoot.querySelector('.progress-ring__circle') as SVGCircleElement;
-    if (!circle) {
-      console.error('Progress ring circle not found!');
-      return;
-    }
+    if (!circle) return;
 
     const radius = 140;
     const circumference = 2 * Math.PI * radius;
     
-    // Set the stroke-dasharray to the circumference
-    circle.style.strokeDasharray = `${circumference} ${circumference}`;
-    circle.style.strokeDashoffset = '0';
+    // Set stroke-dasharray using setAttribute (more reliable for SVG)
+    circle.setAttribute('stroke-dasharray', `${circumference} ${circumference}`);
+    circle.setAttribute('stroke-dashoffset', '0');
   }
 
   private updateProgressRing(timeLeft: number): void {
@@ -142,12 +139,13 @@ export class UrdUIService implements UrdTimerObserver {
         break;
     }
     
-    // Calculate progress (1.0 = full, 0.0 = empty)
+    // Calculate how much of the circle should be VISIBLE (not hidden)
+    // When timeLeft = totalSeconds (full time), we want offset = 0 (full circle visible)
+    // When timeLeft = 0 (no time), we want offset = circumference (circle hidden)
     const progress = timeLeft / totalSeconds;
-    
-    // Calculate offset (0 = full circle, circumference = empty circle)
     const offset = circumference * (1 - progress);
     
-    circle.style.strokeDashoffset = offset.toString();
+    // Use setAttribute for SVG properties (more reliable than style)
+    circle.setAttribute('stroke-dashoffset', offset.toString());
   }
 }
