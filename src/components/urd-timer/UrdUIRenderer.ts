@@ -1,17 +1,15 @@
-import { IUrdUIRenderer } from './IUrdUIRenderer.ts';
-import { ResourceLoader } from '../../services/ResourceLoader';
+import { IUrdUIRenderer } from './IUrdUIRenderer';
 import styles from './UrdTimer.css?inline';
+import htmlContent from './UrdTimer.html?raw';
 
 export class UrdUIRenderer implements IUrdUIRenderer {
   constructor(
-    private shadowRoot: ShadowRoot,
-    private resourceLoader: ResourceLoader
+    private shadowRoot: ShadowRoot
   ) {}
 
   async render(): Promise<void> {
     try {
-      const html = await this.resourceLoader.fetchResource('./UrdTimer.html');
-      await this.renderContent(html);
+      await this.renderContent(htmlContent);
       this.renderKeyboardShortcutInfo();
     } catch (error) {
       console.error('Error rendering UI:', error);
