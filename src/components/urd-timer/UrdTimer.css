@@ -153,3 +153,89 @@ button:active {
 .progress-ring__circle.long-break {
   stroke: #FF9800;
 }
+
+/* Overlay Mode Styles */
+.overlay-mode {
+  position: fixed;
+  background: transparent;
+  margin: 0;
+  padding: 0;
+  transition: top 5s ease-in-out, 
+              right 5s ease-in-out, 
+              left 5s ease-in-out, 
+              transform 5s ease-in-out,
+              opacity 1s ease-in-out;
+  opacity: 1;
+}
+
+/* Overlay positioning */
+.overlay-mode[data-position="top-right"] {
+  top: 20px;
+  right: 20px;
+}
+
+.overlay-mode[data-position="top-left"] {
+  top: 20px;
+  left: 20px;
+}
+
+.overlay-mode[data-position="bottom-right"] {
+  bottom: 20px;
+  right: 20px;
+}
+
+.overlay-mode[data-position="bottom-left"] {
+  bottom: 20px;
+  left: 20px;
+}
+
+.overlay-mode[data-position="center"] {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Overlay: Smaller circle (200x200) */
+.overlay-mode .progress-ring {
+  width: 200px;
+  height: 200px;
+}
+
+/* Overlay: Soft pastel colors */
+.overlay-mode .progress-ring__circle.work {
+  stroke: #A8D8EA;
+  stroke-width: 8px;
+}
+
+.overlay-mode .progress-ring__circle.short-break {
+  stroke: #FFD6A5;
+  stroke-width: 8px;
+}
+
+.overlay-mode .progress-ring__circle.long-break {
+  stroke: #E1BEE7;
+  stroke-width: 8px;
+}
+
+/* Overlay: Enhanced text visibility */
+.overlay-mode #time-display {
+  color: white;
+  font-size: 42px;
+  text-shadow: 
+    0 0 10px rgba(0, 0, 0, 0.8),
+    0 0 20px rgba(0, 0, 0, 0.6),
+    0 2px 4px rgba(0, 0, 0, 0.9);
+}
+
+.overlay-mode #session-info {
+  color: white;
+  font-size: 14px;
+  text-shadow: 
+    0 0 8px rgba(0, 0, 0, 0.7),
+    0 2px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* Overlay: Fade effect class */
+.overlay-mode.fading {
+  opacity: 0;
+}
