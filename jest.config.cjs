@@ -15,6 +15,7 @@ module.exports = {
     '^@/(.*)$': '<rootDir>/src/$1',
     '\\.css\\?inline$': '<rootDir>/tests/mocks/styleMock.js',
     '\\.css$': '<rootDir>/tests/mocks/styleMock.js',
+    '\\.html\\?raw$': '<rootDir>/tests/mocks/htmlMock.js',
   },
   collectCoverage: true,
   coverageDirectory: 'coverage',
