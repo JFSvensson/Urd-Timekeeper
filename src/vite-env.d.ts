@@ -5,7 +5,7 @@ declare module '*.css?inline' {
   export default css;
 }
 
-declare module '*.html' {
+declare module '*.html?raw' {
   const html: string;
   export default html;
 }
