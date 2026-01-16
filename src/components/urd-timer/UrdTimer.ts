@@ -95,13 +95,16 @@ export class UrdTimer extends HTMLElement {
     // Set position attribute for CSS
     container?.setAttribute('data-position', this.overlayConfig.position);
     
-    // Hide all UI controls
+    // Hide all UI controls and text
     const elementsToHide = [
       'h1',
       '#start-stop',
       '#reset',
-      '#settings-panel',
-      '.keyboard-shortcut'
+      '.settings',
+      '.keyboard-shortcut',
+      '#session-info',
+      '#time-display',
+      '.timer-content'
     ];
     
     elementsToHide.forEach(selector => {
