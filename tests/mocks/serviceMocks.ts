@@ -15,7 +15,7 @@ export class MockStorageService {
 }
 
 export class MockMessageService {
-  showMessage(message: string): void {
+  showMessage(_message: string): void {
     // Implementera vid behov, t.ex. console.log(message);
   }
 }
