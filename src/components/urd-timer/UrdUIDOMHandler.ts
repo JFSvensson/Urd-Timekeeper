@@ -43,6 +43,8 @@ export class UrdUIDOMHandler {
       resetButton.addEventListener('click', resetCallback);
     } else {
       console.error('Buttons not found in the shadow DOM');
+      console.log('Shadow root children:', this.shadowRoot.children);
+      console.log('Shadow root HTML:', this.shadowRoot.innerHTML);
     }
   }
 
