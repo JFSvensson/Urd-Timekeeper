@@ -2,6 +2,7 @@ import { UrdTimerService } from '../../../src/components/urd-timer/UrdTimerServi
 import { SessionType } from '../../../src/components/urd-timer/UrdSessionType';
 import { StorageService } from '../../../src/services/StorageService';
 import { MessageService } from '../../../src/services/MessageService';
+import { UrdSettingsManager } from '../../../src/components/urd-timer/UrdSettingsManager';
 import { SECONDS_PER_MINUTE, DEFAULT_WORK_DURATION, DEFAULT_SHORT_BREAK_DURATION, DEFAULT_LONG_BREAK_DURATION, DEFAULT_SHORT_BREAKS_BEFORE_LONG } from '../../../src/components/urd-timer/UrdConstants';
 
 class MockStorageService implements StorageService {
@@ -34,11 +35,13 @@ describe('UrdTimerService', () => {
   let timerService: UrdTimerService;
   let mockStorageService: MockStorageService;
   let mockMessageService: MockMessageService;
+  let settingsManager: UrdSettingsManager;
 
   beforeEach(() => {
     mockStorageService = new MockStorageService();
     mockMessageService = new MockMessageService();
-    timerService = new UrdTimerService(mockStorageService, mockMessageService);
+    settingsManager = new UrdSettingsManager(mockStorageService);
+    timerService = new UrdTimerService(settingsManager, mockMessageService);
   });
 
   test('should initialize with default values', () => {
