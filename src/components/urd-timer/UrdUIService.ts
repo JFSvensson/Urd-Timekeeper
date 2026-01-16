@@ -19,6 +19,7 @@ export class UrdUIService implements UrdTimerObserver {
   async initialize(): Promise<void> {
     await this.uiRenderer.render();
     this.domHandler.initializeDOMElements();
+    this.setupProgressRing();
     this.addKeyboardListener();
     this.update(this.INITIAL_TIME_LEFT, false);
   }
@@ -103,6 +104,21 @@ export class UrdUIService implements UrdTimerObserver {
     }
   }
 
+  private setupProgressRing(): void {
+    const circle = this.shadowRoot.querySelector('.progress-ring__circle') as SVGCircleElement;
+    if (!circle) {
+      console.error('Progress ring circle not found!');
+      return;
+    }
+
+    const radius = 140;
+    const circumference = 2 * Math.PI * radius;
+    
+    // Set the stroke-dasharray to the circumference
+    circle.style.strokeDasharray = `${circumference} ${circumference}`;
+    circle.style.strokeDashoffset = '0';
+  }
+
   private updateProgressRing(timeLeft: number): void {
     const circle = this.shadowRoot.querySelector('.progress-ring__circle') as SVGCircleElement;
     if (!circle) return;
@@ -110,7 +126,7 @@ export class UrdUIService implements UrdTimerObserver {
     const radius = 140;
     const circumference = 2 * Math.PI * radius;
     
-    // Get total duration for current session
+    // Get total duration for current session (in seconds)
     const sessionType = this.timerService.getCurrentSession();
     let totalSeconds = 0;
     
@@ -126,7 +142,10 @@ export class UrdUIService implements UrdTimerObserver {
         break;
     }
     
+    // Calculate progress (1.0 = full, 0.0 = empty)
     const progress = timeLeft / totalSeconds;
+    
+    // Calculate offset (0 = full circle, circumference = empty circle)
     const offset = circumference * (1 - progress);
     
     circle.style.strokeDashoffset = offset.toString();
