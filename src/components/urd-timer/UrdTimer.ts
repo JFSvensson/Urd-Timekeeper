@@ -11,6 +11,12 @@ import { UrdSettingsManager } from './UrdSettingsManager';
 export class UrdTimer extends HTMLElement {
   private timerService: UrdTimerService;
   private uiService: UrdUIService;
+  private overlayMode: boolean = false;
+  private overlayConfig = {
+    workDuration: 50,
+    breakDuration: 10,
+    position: 'top-right'
+  };
 
   constructor(
     storageService: StorageService = new BrowserStorageService(),
@@ -18,8 +24,19 @@ export class UrdTimer extends HTMLElement {
   ) {
     super();
     const shadow = this.attachShadow({ mode: 'open' });
+    
+    // Check if overlay mode is enabled
+    this.overlayMode = this.hasAttribute('overlay-mode');
+    
+    // Parse query parameters if in overlay mode
+    if (this.overlayMode) {
+      this.parseOverlayQueryParams();
+      // Disable notifications in overlay mode
+      messageService = { showMessage: () => {} } as MessageService;
+    }
+    
     const settingsManager = new UrdSettingsManager(storageService);
-    this.timerService = new UrdTimerService(settingsManager, messageService);
+    this.timerService = new UrdTimerService(settingsManager, messageService, this.overlayMode);
     const uiRenderer = new UrdUIRenderer(shadow);
     const domHandler = new UrdUIDOMHandler(shadow, this.timerService);
     this.uiService = new UrdUIService(shadow, this.timerService, uiRenderer, domHandler);
@@ -32,12 +49,67 @@ export class UrdTimer extends HTMLElement {
     }
 
     await this.uiService.initialize();
-    this.timerService.loadSettings();
-    await this.addEventListeners();
+    
+    if (this.overlayMode) {
+      // Apply overlay settings and hide UI elements
+      this.applyOverlayMode();
+      this.timerService.updateSettings(
+        this.overlayConfig.workDuration,
+        this.overlayConfig.breakDuration,
+        15, // longBreakDuration (not used much in overlay)
+        4   // shortBreaksBeforeLong
+      );
+      // Auto-start the timer in overlay mode
+      setTimeout(() => this.timerService.start(), 1000);
+    } else {
+      this.timerService.loadSettings();
+      await this.addEventListeners();
+    }
   }
 
   disconnectedCallback() {
     this.uiService.removeKeyboardListener();
+  }
+  
+  private parseOverlayQueryParams(): void {
+    const params = new URLSearchParams(window.location.search);
+    
+    if (params.has('work')) {
+      this.overlayConfig.workDuration = parseInt(params.get('work')!, 10) || 50;
+    }
+    if (params.has('break')) {
+      this.overlayConfig.breakDuration = parseInt(params.get('break')!, 10) || 10;
+    }
+    if (params.has('position')) {
+      this.overlayConfig.position = params.get('position')! || 'top-right';
+    }
+  }
+  
+  private applyOverlayMode(): void {
+    if (!this.shadowRoot) return;
+    
+    // Add overlay-mode class to container
+    const container = this.shadowRoot.querySelector('#timer-container');
+    container?.classList.add('overlay-mode');
+    
+    // Set position attribute for CSS
+    container?.setAttribute('data-position', this.overlayConfig.position);
+    
+    // Hide all UI controls
+    const elementsToHide = [
+      'h1',
+      '#start-stop',
+      '#reset',
+      '#settings-panel',
+      '.keyboard-shortcut'
+    ];
+    
+    elementsToHide.forEach(selector => {
+      const element = this.shadowRoot!.querySelector(selector);
+      if (element) {
+        (element as HTMLElement).style.display = 'none';
+      }
+    });
   }
 
   private addEventListeners() {
