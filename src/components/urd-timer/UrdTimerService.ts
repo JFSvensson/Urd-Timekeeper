@@ -45,22 +45,30 @@ export class UrdTimerService {
   }
 
   private saveSettings() {
-    this.storageService.setItem('urdTimerSettings', JSON.stringify({
-      workDuration: this.workDuration / SECONDS_PER_MINUTE,
-      shortBreakDuration: this.shortBreakDuration / SECONDS_PER_MINUTE,
-      longBreakDuration: this.longBreakDuration / SECONDS_PER_MINUTE,
-      shortBreaksBeforeLong: this.shortBreaksBeforeLong
-    }));
+    try {
+      this.storageService.setItem('urdTimerSettings', JSON.stringify({
+        workDuration: this.workDuration / SECONDS_PER_MINUTE,
+        shortBreakDuration: this.shortBreakDuration / SECONDS_PER_MINUTE,
+        longBreakDuration: this.longBreakDuration / SECONDS_PER_MINUTE,
+        shortBreaksBeforeLong: this.shortBreaksBeforeLong
+      }));
+    } catch (error) {
+      console.error('Failed to save timer settings:', error);
+    }
   }
 
   loadSettings() {
-    const savedSettings = this.storageService.getItem('urdTimerSettings');
-    if (savedSettings) {
-      const settings = JSON.parse(savedSettings);
-      this.workDuration = settings.workDuration * SECONDS_PER_MINUTE;
-      this.shortBreakDuration = settings.shortBreakDuration * SECONDS_PER_MINUTE;
-      this.longBreakDuration = settings.longBreakDuration * SECONDS_PER_MINUTE;
-      this.shortBreaksBeforeLong = settings.shortBreaksBeforeLong;
+    try {
+      const savedSettings = this.storageService.getItem('urdTimerSettings');
+      if (savedSettings) {
+        const settings = JSON.parse(savedSettings);
+        this.workDuration = settings.workDuration * SECONDS_PER_MINUTE;
+        this.shortBreakDuration = settings.shortBreakDuration * SECONDS_PER_MINUTE;
+        this.longBreakDuration = settings.longBreakDuration * SECONDS_PER_MINUTE;
+        this.shortBreaksBeforeLong = settings.shortBreaksBeforeLong;
+      }
+    } catch (error) {
+      console.error('Failed to load timer settings, using defaults:', error);
     }
     this.reset();
   }
@@ -144,5 +152,31 @@ export class UrdTimerService {
 
   getCompletedSessions(): number {
     return this.completedSessions;
+  }
+
+  getTimeLeft(): number {
+    return this.timeLeft;
+  }
+
+  getIsRunning(): boolean {
+    return this.isRunning;
+  }
+
+  getConfig() {
+    return {
+      workDuration: this.workDuration / SECONDS_PER_MINUTE,
+      shortBreakDuration: this.shortBreakDuration / SECONDS_PER_MINUTE,
+      longBreakDuration: this.longBreakDuration / SECONDS_PER_MINUTE,
+      shortBreaksBeforeLong: this.shortBreaksBeforeLong
+    };
+  }
+
+  getState() {
+    return {
+      timeLeft: this.timeLeft,
+      isRunning: this.isRunning,
+      currentSession: this.currentSession,
+      completedSessions: this.completedSessions
+    };
   }
 }
