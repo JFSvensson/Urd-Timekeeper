@@ -4,10 +4,15 @@ Urd Timekeeper is a Pomodoro timer web application that helps you manage your ti
 
 ## Features
 
-- Pomodoro timer with 25-minute work intervals and 5-minute breaks
-- Start, pause, and resume functionality
-- Visual feedback of remaining time
-- Notifications when a session is complete
+- ✅ Pomodoro timer with 25-minute work intervals and 5-minute breaks
+- ✅ Start, pause, and resume functionality
+- ✅ Circular progress indicator showing remaining time
+- ✅ Visual feedback with color-coded sessions (green for work, blue for short break, orange for long break)
+- ✅ Session counter tracking completed Pomodoros
+- ✅ Notifications when a session is complete
+- ✅ Keyboard shortcuts (Space bar to start/pause)
+- ✅ Customizable time intervals with persistent settings
+- ✅ Clean, modern UI with smooth animations
 
 ## Installation
 
@@ -21,16 +26,13 @@ Visit `http://localhost:5173` in your web browser to use Urd Timekeeper.
 
 ## Future Features
 
-- [ ] Customizable time intervals
 - [ ] Sound notifications
-- [ ] Session counter
-- [ ] Circular progress indicator
 - [ ] Integrated task list
-- [ ] Pause functionality
 - [ ] Statistics and reports
-- [ ] Keyboard shortcuts
 - [ ] Theme toggle (light/dark mode)
 - [ ] Multi-language support
+- [ ] Browser notifications API
+- [ ] Export session history
 
 ## Contributing
 
