@@ -122,54 +122,56 @@ Urd Timekeeper includes a special **overlay mode** designed for creating ambient
 
 **Why this method?** No server needed, works offline, never times out - perfect for multi-hour recordings.
 
-**The Problem**: Vite dev server (`http://localhost:5174`) automatically shuts down after inactivity or when you close the terminal. This is problematic for 2-3 hour recording sessions.
+**The Problem with Dev Server**: Vite dev server (`http://localhost:5174`) automatically shuts down after inactivity or when you close the terminal. This is problematic for 2-3 hour recording sessions.
 
-**The Solution**: Build a static version that runs without any server.
+**The Solution**: Build a static version and serve it with a simple local server.
 
 1. **Build the project once**:
    ```bash
    npm run build
    ```
-   This creates a `dist/` folder with standalone HTML/CSS/JS files that work completely offline.
+   This creates a `dist/` folder with standalone HTML/CSS/JS files.
 
-2. **Locate the built file**:
-   - Navigate to your project folder
-   - Go to `dist/overlay.html`
-   - Full path example: `C:\Users\svens\Documents\Projekt\Urd Timekeeper\dist\overlay.html`
+2. **Serve the dist folder with a local server**:
 
-3. **Open the static file**:
+   **Option A - Using Python (Built-in on most systems)**:
+   ```bash
+   cd dist
+   python -m http.server 8000
+   ```
+   Then open: `http://localhost:8000/overlay.html?work=50&break=10&position=top-right`
    
-   **Option A - Direct browser open**:
-   - Drag `dist/overlay.html` into Chrome/Firefox
-   - Or right-click → "Open with" → Chrome
+   **Option B - Using Node.js http-server**:
+   ```bash
+   npx http-server dist -p 8000 --cors
+   ```
+   Then open: `http://localhost:8000/overlay.html?work=50&break=10&position=top-right`
    
-   **Option B - Type the URL manually**:
+   **Option C - Using npm script (Recommended)**:
+   ```bash
+   npm run serve
    ```
-   file:///C:/Users/svens/Documents/Projekt/Urd%20Timekeeper/dist/overlay.html
-   ```
+   (This runs the included serve script from package.json)
+   Then open the URL shown in terminal.
 
-4. **Add query parameters to the file:// URL**:
-   ```
-   file:///C:/Users/svens/Documents/Projekt/Urd%20Timekeeper/dist/overlay.html?work=50&break=10&position=top-right
-   ```
-   
-   **Important**: Replace spaces with `%20` in the path if needed.
-
-5. **Use in OBS Browser Source**:
+3. **Use in OBS Browser Source**:
    - Add Browser Source in OBS
-   - **URL**: Paste the full `file:///` path with query parameters
+   - **URL**: `http://localhost:8000/overlay.html?work=50&break=10&position=top-right`
    - **Width**: 1920, **Height**: 1080
    - Same recording settings as Method 1
 
+**Why not file:// URLs?**
+Modern browsers block ES modules from `file://` protocol for security reasons (CORS policy). You'll get errors like "Cross-Origin request blocked" or "Module source URI is not allowed". Using `http://localhost` solves this.
+
 **Advantages of Static Build Method**:
-- ✅ **Never shuts down** - No server timeout issues
-- ✅ **Works offline** - No internet required
-- ✅ **Consistent performance** - No dev server overhead
-- ✅ **Run in background** - Computer can sleep/wake without breaking recording
-- ✅ **Portable** - Copy `dist/` folder anywhere, works immediately
+- ✅ **Stable and persistent** - Server runs until you stop it manually
+- ✅ **Lightweight** - No dev server overhead, just static file serving
+- ✅ **Works offline** - No internet required after build
+- ✅ **Consistent performance** - No hot-reload or file watching
+- ✅ **Portable** - Copy `dist/` folder to any computer and serve it
 
 **When to rebuild**:
-Only rebuild (`npm run build`) if you change timer settings or code. For normal recording, build once and reuse forever.
+Only rebuild (`npm run build`) if you change timer settings or code. For normal recording, build once and reuse the same dist folder.
 
 ---
 
@@ -213,11 +215,13 @@ Only rebuild (`npm run build`) if you change timer settings or code. For normal 
 
 **Dev server keeps shutting down:**
 - Use Method 3 (static build) instead
-- Or keep the terminal window open during recording
+- Keep the terminal window open during recording
 
-**File:// URL doesn't work with query parameters:**
-- Ensure no spaces in path (use %20)
-- Try enclosing the full URL in quotes when opening from command line
+**CORS errors with file:// URLs:**
+- Cannot use `file://` protocol with modern JavaScript modules
+- Use `http://localhost` instead (see Method 3)
+- Python: `python -m http.server 8000` in dist folder
+- Node: `npx http-server dist -p 8000`
 
 ## Future Features
 
