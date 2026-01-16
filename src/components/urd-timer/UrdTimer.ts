@@ -6,6 +6,7 @@ import { BrowserStorageService } from '../../services/BrowserStorageService';
 import { WebPageMessageService } from '../../services/WebPageMessageService';
 import { UrdUIRenderer } from './UrdUIRenderer';
 import { UrdUIDOMHandler } from './UrdUIDOMHandler';
+import { UrdSettingsManager } from './UrdSettingsManager';
 
 export class UrdTimer extends HTMLElement {
   private timerService: UrdTimerService;
@@ -17,7 +18,8 @@ export class UrdTimer extends HTMLElement {
   ) {
     super();
     const shadow = this.attachShadow({ mode: 'open' });
-    this.timerService = new UrdTimerService(storageService, messageService);
+    const settingsManager = new UrdSettingsManager(storageService);
+    this.timerService = new UrdTimerService(settingsManager, messageService);
     const uiRenderer = new UrdUIRenderer(shadow);
     const domHandler = new UrdUIDOMHandler(shadow, this.timerService);
     this.uiService = new UrdUIService(shadow, this.timerService, uiRenderer, domHandler);
