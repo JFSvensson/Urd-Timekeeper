@@ -15,11 +15,14 @@ export class UrdTimerService {
   private shortBreaksBeforeLong: number;
   private currentSession: SessionType = SessionType.Work;
   private completedSessions: number = 0;
+  private overlayMode: boolean = false;
   
   constructor(
     private settingsManager: UrdSettingsManager,
-    private messageService: MessageService
+    private messageService: MessageService,
+    overlayMode: boolean = false
   ) {
+    this.overlayMode = overlayMode;
     const settings = this.settingsManager.loadSettings();
     const settingsInSeconds = this.settingsManager.getSettingsInSeconds(settings);
     this.workDuration = settingsInSeconds.workDuration;
@@ -92,7 +95,7 @@ export class UrdTimerService {
     this.notifyObservers();
   }
 
-  private start() {
+  start() {
     if (!this.isRunning) {
       this.timer = window.setInterval(() => {
         this.timeLeft--;
@@ -141,6 +144,13 @@ export class UrdTimerService {
     }
     this.notifyObservers();
     this.notifyUser();
+    
+    // Auto-start next session in overlay mode after 5 seconds
+    if (this.overlayMode) {
+      setTimeout(() => {
+        this.start();
+      }, 5000);
+    }
   }
 
   private notifyUser() {
