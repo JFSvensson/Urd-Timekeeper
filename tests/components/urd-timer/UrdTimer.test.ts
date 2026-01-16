@@ -6,15 +6,15 @@ import { WebPageMessageService } from '../../../src/services/WebPageMessageServi
 import { ResourceLoader } from '../../../src/services/ResourceLoader';
 
 jest.mock('../../../src/components/urd-timer/UrdTimerService');
+jest.mock('../../../src/components/urd-timer/UrdUIRenderer');
+jest.mock('../../../src/components/urd-timer/UrdUIDOMHandler');
 
 jest.mock('../../../src/components/urd-timer/UrdUIService', () => {
   return {
-    UrdUIService: jest.fn().mockImplementation((_shadowRoot, _timerService, resourceLoader) => ({
-      render: jest.fn().mockImplementation(async () => {
-        await resourceLoader.fetchResource('./UrdTimer.css');
-        await resourceLoader.fetchResource('./UrdTimer.html');
-      }),
-      addButtonListeners: jest.fn()
+    UrdUIService: jest.fn().mockImplementation((_shadowRoot, _timerService, _uiRenderer, _domHandler) => ({
+      initialize: jest.fn().mockResolvedValue(undefined),
+      addButtonListeners: jest.fn(),
+      removeKeyboardListener: jest.fn()
     }))
   };
 });
@@ -52,7 +52,7 @@ describe('UrdTimer', () => {
     mockResourceLoader = jest.mocked(new ResourceLoader());
   
     mockTimerService = jest.mocked(new UrdTimerService(mockStorageService, mockMessageService));
-    mockUIService = jest.mocked(new UrdUIService(null, mockTimerService, mockResourceLoader));
+    mockUIService = jest.mocked(new UrdUIService(null as any, mockTimerService, null as any, null as any));
   
     (UrdTimerService as jest.MockedClass<typeof UrdTimerService>).mockImplementation(() => mockTimerService);
     (UrdUIService as jest.MockedClass<typeof UrdUIService>).mockImplementation(() => mockUIService);
@@ -67,9 +67,9 @@ describe('UrdTimer', () => {
     expect(mockTimerService.addObserver).toHaveBeenCalledWith(mockUIService);
   });
 
-  test('should render UI and load settings on connectedCallback', async () => {
+  test('should initialize UI and load settings on connectedCallback', async () => {
     await timer.connectedCallback();
-    expect(mockUIService.render).toHaveBeenCalled();
+    expect(mockUIService.initialize).toHaveBeenCalled();
     expect(mockTimerService.loadSettings).toHaveBeenCalled();
   });
 
@@ -77,15 +77,4 @@ describe('UrdTimer', () => {
     await timer.connectedCallback();
     expect(mockUIService.addButtonListeners).toHaveBeenCalled();
   });
-
-  // test('should load resources correctly', async () => {
-  //   await timer.connectedCallback();
-  
-  //   expect(mockUIService.render).toHaveBeenCalled();    
-  
-  //   // Verifiera att fetchResource har anropats för både CSS och HTML
-  //   expect(mockResourceLoader.fetchResource).toHaveBeenCalledTimes(2);
-  //   expect(mockResourceLoader.fetchResource).toHaveBeenCalledWith('./UrdTimer.css');
-  //   expect(mockResourceLoader.fetchResource).toHaveBeenCalledWith('./UrdTimer.html');
-  // });
 });
