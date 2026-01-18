@@ -30,14 +30,13 @@ Urd Timekeeper includes a special **overlay mode** designed for creating ambient
 
 ### Quick Start
 
-1. **Development mode**: `http://localhost:5174/overlay.html?work=50&break=10&position=top-right`
-2. **Production build**: Build once with `npm run build`, then open `dist/overlay.html` directly
+1. **Development mode**: `http://localhost:5174/overlay.html?work=50&break=10`
+2. **Production build**: Build once with `npm run build`, then serve with `npm run serve`
 
 ### Query Parameters
 
 - `work=50` - Work session duration in minutes (default: 50)
 - `break=10` - Break session duration in minutes (default: 10)
-- `position=top-right` - Starting position (options: `top-right`, `top-left`, `bottom-right`, `bottom-left`, `center`)
 
 ### Features
 
@@ -45,8 +44,7 @@ Urd Timekeeper includes a special **overlay mode** designed for creating ambient
 - 📐 **Compact 200×200px circle** - Perfect for corner placement
 - 🎭 **Fully transparent background** - Ready for video compositing
 - 🔄 **Auto-cycling sessions** - Continuous loop with 5-second delays
-- 🌊 **Smooth animations**: 5-second position transitions with fade effects
-- 📍 **Dynamic positioning**: Work sessions in corner, break sessions glide to center
+- 📍 **Centered positioning**: Circle stays centered throughout recording (reposition in your video editor)
 
 ### Recording Methods
 
@@ -60,7 +58,7 @@ Urd Timekeeper includes a special **overlay mode** designed for creating ambient
 
 3. **Add Browser Source**:
    - Click **"+"** under Sources → Select **"Browser"**
-   - **URL**: `http://localhost:5174/overlay.html?work=50&break=10&position=top-right`
+   - **URL**: `http://localhost:5174/overlay.html?work=50&break=10`
    - **Width**: `1920`
    - **Height**: `1080`
    - **FPS**: Match your target video frame rate (usually 30 or 60)
