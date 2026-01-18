@@ -12,8 +12,6 @@ export class UrdUIService implements UrdTimerObserver {
   private displayService: UrdTimerDisplayService;
   private progressRingService: UrdProgressRingService;
   private keyboardService: UrdKeyboardShortcutService;
-  private shadowRoot: ShadowRoot;
-  private previousSession: 'work' | 'shortBreak' | 'longBreak' = 'work';
 
   constructor(
     shadowRoot: ShadowRoot,
@@ -21,7 +19,6 @@ export class UrdUIService implements UrdTimerObserver {
     private uiRenderer: IUrdUIRenderer,
     private domHandler: UrdUIDOMHandler
   ) {
-    this.shadowRoot = shadowRoot;
     this.INITIAL_TIME_LEFT = this.timerService.getWorkDuration() * SECONDS_PER_MINUTE;
     this.displayService = new UrdTimerDisplayService(shadowRoot);
     this.progressRingService = new UrdProgressRingService(shadowRoot);
@@ -57,40 +54,6 @@ export class UrdUIService implements UrdTimerObserver {
     
     this.displayService.updateSessionInfo(sessionType, sessionCount);
     this.progressRingService.updateProgressRingColor(sessionType);
-    
-    // Handle overlay position animation on session change
-    this.handleOverlayPositionChange(sessionType);
-  }
-  
-  private handleOverlayPositionChange(sessionType: 'work' | 'shortBreak' | 'longBreak'): void {
-    const container = this.shadowRoot.querySelector('#timer-container');
-    
-    if (!container || !container.classList.contains('overlay-mode')) {
-      return; // Not in overlay mode
-    }
-    
-    // Check if session type changed
-    if (sessionType !== this.previousSession) {
-      const currentPosition = container.getAttribute('data-position');
-      let targetPosition: string;
-      
-      // Work session -> corner, Break session -> center
-      if (sessionType === 'work') {
-        targetPosition = currentPosition || 'top-right';
-      } else {
-        targetPosition = 'center';
-      }
-      
-      // Apply fade out, change position, fade in
-      container.classList.add('fading');
-      
-      setTimeout(() => {
-        container.setAttribute('data-position', targetPosition);
-        container.classList.remove('fading');
-      }, 1000);
-      
-      this.previousSession = sessionType;
-    }
   }
 
   private updateProgressRing(timeLeft: number): void {
