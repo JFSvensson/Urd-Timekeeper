@@ -80,9 +80,8 @@ export class UrdTimer extends HTMLElement {
     if (params.has('break')) {
       this.overlayConfig.breakDuration = parseInt(params.get('break')!, 10) || 10;
     }
-    if (params.has('position')) {
-      this.overlayConfig.position = params.get('position')! || 'top-right';
-    }
+    // Always use center position in overlay mode
+    this.overlayConfig.position = 'center';
   }
   
   private applyOverlayMode(): void {
