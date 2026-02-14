@@ -3,7 +3,10 @@ import { UrdTimerService } from '../../../src/components/urd-timer/UrdTimerServi
 import { UrdUIRenderer } from '../../../src/components/urd-timer/UrdUIRenderer';
 import { UrdUIDOMHandler } from '../../../src/components/urd-timer/UrdUIDOMHandler';
 import { UrdSettingsManager } from '../../../src/components/urd-timer/UrdSettingsManager';
-import { SECONDS_PER_MINUTE, DEFAULT_WORK_DURATION } from '../../../src/components/urd-timer/UrdConstants';
+import {
+  SECONDS_PER_MINUTE,
+  DEFAULT_WORK_DURATION,
+} from '../../../src/components/urd-timer/UrdConstants';
 import { MockStorageService, MockMessageService } from '../../mocks/serviceMocks';
 
 describe('UrdUIService', () => {
@@ -55,13 +58,13 @@ describe('UrdUIService', () => {
 
     mockRenderer = {
       render: jest.fn().mockResolvedValue(undefined),
-      renderKeyboardShortcutInfo: jest.fn()
+      renderKeyboardShortcutInfo: jest.fn(),
     } as any;
 
     mockDomHandler = {
       initializeDOMElements: jest.fn(),
       addButtonListeners: jest.fn(),
-      addSettingsEventListeners: jest.fn()
+      addSettingsEventListeners: jest.fn(),
     } as any;
 
     uiService = new UrdUIService(shadowRoot, timerService, mockRenderer, mockDomHandler);
@@ -80,10 +83,7 @@ describe('UrdUIService', () => {
       await uiService.initialize();
 
       // update should be called with workDuration in seconds, not double-multiplied
-      expect(updateSpy).toHaveBeenCalledWith(
-        DEFAULT_WORK_DURATION * SECONDS_PER_MINUTE,
-        false
-      );
+      expect(updateSpy).toHaveBeenCalledWith(DEFAULT_WORK_DURATION * SECONDS_PER_MINUTE, false);
     });
   });
 
@@ -108,10 +108,7 @@ describe('UrdUIService', () => {
     it('should call update with initial values after setup', async () => {
       const updateSpy = jest.spyOn(uiService, 'update');
       await uiService.initialize();
-      expect(updateSpy).toHaveBeenCalledWith(
-        DEFAULT_WORK_DURATION * SECONDS_PER_MINUTE,
-        false
-      );
+      expect(updateSpy).toHaveBeenCalledWith(DEFAULT_WORK_DURATION * SECONDS_PER_MINUTE, false);
     });
   });
 
