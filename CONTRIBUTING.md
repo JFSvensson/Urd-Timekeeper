@@ -53,10 +53,10 @@ All TypeScript must adhere to [TypeScript Standard Style](https://github.com/sta
 
 This section lists the labels we use to help us track and manage issues and pull requests.
 
-* `bug` - Issues that are bugs.
-* `enhancement` - Issues that are feature requests.
-* `documentation` - Issues or pull requests related to documentation.
-* `good first issue` - Good for newcomers.
+- `bug` - Issues that are bugs.
+- `enhancement` - Issues that are feature requests.
+- `documentation` - Issues or pull requests related to documentation.
+- `good first issue` - Good for newcomers.
 
 ## Getting Help
 
