@@ -7,7 +7,7 @@ describe('UrdKeyboardShortcutService', () => {
 
   beforeEach(() => {
     mockTimerService = {
-      toggle: jest.fn()
+      toggle: jest.fn(),
     } as any;
 
     keyboardService = new UrdKeyboardShortcutService(mockTimerService);
@@ -42,7 +42,7 @@ describe('UrdKeyboardShortcutService', () => {
 
       const event = new KeyboardEvent('keydown', { key: ' ' });
       const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
-      
+
       document.dispatchEvent(event);
 
       expect(preventDefaultSpy).toHaveBeenCalled();
@@ -82,7 +82,7 @@ describe('UrdKeyboardShortcutService', () => {
 
     test('should not crash when called multiple times', () => {
       keyboardService.addKeyboardListener();
-      
+
       expect(() => {
         keyboardService.removeKeyboardListener();
         keyboardService.removeKeyboardListener();
