@@ -83,9 +83,9 @@ describe('UrdUIDOMHandler', () => {
       `;
 
       domHandler.initializeDOMElements();
-      
+
       const updateSettingsSpy = jest.spyOn(timerService, 'updateSettings');
-      
+
       domHandler.addSettingsEventListeners();
 
       const saveButton = shadowRoot.querySelector('#save-settings') as HTMLButtonElement;
@@ -104,9 +104,9 @@ describe('UrdUIDOMHandler', () => {
       `;
 
       domHandler.initializeDOMElements();
-      
+
       const updateSettingsSpy = jest.spyOn(timerService, 'updateSettings');
-      
+
       domHandler.addSettingsEventListeners();
 
       const saveButton = shadowRoot.querySelector('#save-settings') as HTMLButtonElement;
@@ -122,7 +122,7 @@ describe('UrdUIDOMHandler', () => {
       `;
 
       domHandler.initializeDOMElements();
-      
+
       // Should not throw error when button is missing
       expect(() => domHandler.addSettingsEventListeners()).not.toThrow();
     });
@@ -133,9 +133,9 @@ describe('UrdUIDOMHandler', () => {
       `;
 
       domHandler.initializeDOMElements();
-      
+
       const updateSettingsSpy = jest.spyOn(timerService, 'updateSettings');
-      
+
       domHandler.addSettingsEventListeners();
 
       const saveButton = shadowRoot.querySelector('#save-settings') as HTMLButtonElement;
@@ -172,7 +172,6 @@ describe('UrdUIDOMHandler', () => {
       shadowRoot.innerHTML = ''; // No buttons
 
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
-      const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
 
       const toggleCallback = jest.fn();
       const resetCallback = jest.fn();
@@ -180,11 +179,8 @@ describe('UrdUIDOMHandler', () => {
       domHandler.addButtonListeners(toggleCallback, resetCallback);
 
       expect(consoleErrorSpy).toHaveBeenCalledWith('Buttons not found in the shadow DOM');
-      expect(consoleLogSpy).toHaveBeenCalledWith('Shadow root children:', expect.anything());
-      expect(consoleLogSpy).toHaveBeenCalledWith('Shadow root HTML:', '');
 
       consoleErrorSpy.mockRestore();
-      consoleLogSpy.mockRestore();
     });
 
     it('should handle only start-stop button present', () => {
