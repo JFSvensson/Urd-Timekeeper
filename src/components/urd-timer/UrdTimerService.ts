@@ -17,7 +17,7 @@ export class UrdTimerService {
   private currentSession: SessionType = SessionType.Work;
   private completedSessions: number = 0;
   private overlayMode: boolean = false;
-  
+
   constructor(
     private settingsManager: UrdSettingsManager,
     private messageService: MessageService,
@@ -50,34 +50,39 @@ export class UrdTimerService {
     }
   }
 
-  updateSettings(workDuration: number, shortBreakDuration: number, longBreakDuration: number, shortBreaksBeforeLong: number) {
+  updateSettings(
+    workDuration: number,
+    shortBreakDuration: number,
+    longBreakDuration: number,
+    shortBreaksBeforeLong: number
+  ) {
     const settings = {
       workDuration,
       shortBreakDuration,
       longBreakDuration,
-      shortBreaksBeforeLong
+      shortBreaksBeforeLong,
     };
-    
+
     this.settingsManager.saveSettings(settings);
     const settingsInSeconds = this.settingsManager.getSettingsInSeconds(settings);
-    
+
     this.workDuration = settingsInSeconds.workDuration;
     this.shortBreakDuration = settingsInSeconds.shortBreakDuration;
     this.longBreakDuration = settingsInSeconds.longBreakDuration;
     this.shortBreaksBeforeLong = settingsInSeconds.shortBreaksBeforeLong;
-    
+
     this.reset();
   }
 
   loadSettings() {
     const settings = this.settingsManager.loadSettings();
     const settingsInSeconds = this.settingsManager.getSettingsInSeconds(settings);
-    
+
     this.workDuration = settingsInSeconds.workDuration;
     this.shortBreakDuration = settingsInSeconds.shortBreakDuration;
     this.longBreakDuration = settingsInSeconds.longBreakDuration;
     this.shortBreaksBeforeLong = settingsInSeconds.shortBreaksBeforeLong;
-    
+
     this.reset();
   }
 
@@ -156,7 +161,7 @@ export class UrdTimerService {
     }
     this.notifyObservers();
     this.notifyUser();
-    
+
     // Auto-start next session in overlay mode after 5 seconds
     if (this.overlayMode) {
       setTimeout(() => {
@@ -166,9 +171,8 @@ export class UrdTimerService {
   }
 
   private notifyUser() {
-    const message = this.currentSession === SessionType.Work 
-      ? 'Dags att arbeta!' 
-      : 'Dags för en paus!';
+    const message =
+      this.currentSession === SessionType.Work ? 'Dags att arbeta!' : 'Dags för en paus!';
     this.messageService.showMessage(message);
   }
 
@@ -193,7 +197,7 @@ export class UrdTimerService {
       workDuration: this.workDuration / SECONDS_PER_MINUTE,
       shortBreakDuration: this.shortBreakDuration / SECONDS_PER_MINUTE,
       longBreakDuration: this.longBreakDuration / SECONDS_PER_MINUTE,
-      shortBreaksBeforeLong: this.shortBreaksBeforeLong
+      shortBreaksBeforeLong: this.shortBreaksBeforeLong,
     };
   }
 
@@ -202,7 +206,7 @@ export class UrdTimerService {
       timeLeft: this.timeLeft,
       isRunning: this.isRunning,
       currentSession: this.currentSession,
-      completedSessions: this.completedSessions
+      completedSessions: this.completedSessions,
     };
   }
 }
