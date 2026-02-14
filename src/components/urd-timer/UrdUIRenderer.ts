@@ -26,7 +26,7 @@ export class UrdUIRenderer implements IUrdUIRenderer {
   renderKeyboardShortcutInfo(): void {
     const shortcutInfo = document.createElement('div');
     shortcutInfo.className = 'keyboard-shortcut';
-    shortcutInfo.textContent = 'Press space to start/pause';
+    shortcutInfo.textContent = 'Tryck mellanslag för att starta/pausa';
     this.shadowRoot.appendChild(shortcutInfo);
   }
 }
