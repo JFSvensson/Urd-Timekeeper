@@ -8,10 +8,13 @@ describe('WebPageMessageService', () => {
   beforeEach(() => {
     // Mock DOM methods
     mockAppendChild = jest.spyOn(document.body, 'appendChild').mockImplementation((node) => node);
-    mockCreateElement = jest.spyOn(document, 'createElement').mockImplementation(() => ({
-      style: {},
-      textContent: '',
-    } as unknown as HTMLElement));
+    mockCreateElement = jest.spyOn(document, 'createElement').mockImplementation(
+      () =>
+        ({
+          style: {},
+          textContent: '',
+        }) as unknown as HTMLElement
+    );
 
     // Create a new instance of WebPageMessageService for each test
     webPageMessageService = new WebPageMessageService();
