@@ -90,7 +90,7 @@ describe('BrowserStorageService', () => {
         workDuration: 30,
         shortBreakDuration: 10,
         longBreakDuration: 20,
-        shortBreaksBeforeLong: 3
+        shortBreaksBeforeLong: 3,
       };
       storageService.setItem('urdTimerSettings', JSON.stringify(settings));
 
