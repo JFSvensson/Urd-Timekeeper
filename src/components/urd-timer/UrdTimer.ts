@@ -15,7 +15,7 @@ export class UrdTimer extends HTMLElement {
   private overlayConfig = {
     workDuration: 50,
     breakDuration: 10,
-    position: 'top-right'
+    position: 'top-right',
   };
 
   constructor(
@@ -24,17 +24,17 @@ export class UrdTimer extends HTMLElement {
   ) {
     super();
     const shadow = this.attachShadow({ mode: 'open' });
-    
+
     // Check if overlay mode is enabled
     this.overlayMode = this.hasAttribute('overlay-mode');
-    
+
     // Parse query parameters if in overlay mode
     if (this.overlayMode) {
       this.parseOverlayQueryParams();
       // Disable notifications in overlay mode
       messageService = { showMessage: () => {} } as MessageService;
     }
-    
+
     const settingsManager = new UrdSettingsManager(storageService);
     this.timerService = new UrdTimerService(settingsManager, messageService, this.overlayMode);
     const uiRenderer = new UrdUIRenderer(shadow);
@@ -49,7 +49,7 @@ export class UrdTimer extends HTMLElement {
     }
 
     await this.uiService.initialize();
-    
+
     if (this.overlayMode) {
       // Apply overlay settings and hide UI elements
       this.applyOverlayMode();
@@ -58,7 +58,7 @@ export class UrdTimer extends HTMLElement {
         this.overlayConfig.workDuration,
         this.overlayConfig.breakDuration,
         15, // longBreakDuration (not used much in overlay)
-        4   // shortBreaksBeforeLong
+        4 // shortBreaksBeforeLong
       );
       // Auto-start the timer in overlay mode
       setTimeout(() => this.timerService.start(), 1000);
@@ -71,10 +71,10 @@ export class UrdTimer extends HTMLElement {
   disconnectedCallback() {
     this.uiService.removeKeyboardListener();
   }
-  
+
   private parseOverlayQueryParams(): void {
     const params = new URLSearchParams(window.location.search);
-    
+
     if (params.has('work')) {
       this.overlayConfig.workDuration = parseInt(params.get('work')!, 10) || 50;
     }
@@ -84,17 +84,17 @@ export class UrdTimer extends HTMLElement {
     // Always use center position in overlay mode
     this.overlayConfig.position = 'center';
   }
-  
+
   private applyOverlayMode(): void {
     if (!this.shadowRoot) return;
-    
+
     // Add overlay-mode class to container
     const container = this.shadowRoot.querySelector('#timer-container');
     container?.classList.add('overlay-mode');
-    
+
     // Set position attribute for CSS
     container?.setAttribute('data-position', this.overlayConfig.position);
-    
+
     // Hide all UI controls and text
     const elementsToHide = [
       'h1',
@@ -104,10 +104,10 @@ export class UrdTimer extends HTMLElement {
       '.keyboard-shortcut',
       '#session-info',
       '#time-display',
-      '.timer-content'
+      '.timer-content',
     ];
-    
-    elementsToHide.forEach(selector => {
+
+    elementsToHide.forEach((selector) => {
       const element = this.shadowRoot!.querySelector(selector);
       if (element) {
         (element as HTMLElement).style.display = 'none';
