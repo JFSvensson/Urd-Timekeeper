@@ -78,6 +78,7 @@ Urd Timekeeper includes a special **overlay mode** designed for creating ambient
    - File saved to your Videos folder by default
 
 **ProRes vs WebM:**
+
 - **ProRes 4444**: Larger files (~50GB/hour), best quality, native Premiere Pro support, preserves transparency perfectly
 - **WebM VP9**: Smaller files (~2GB/hour), good quality, requires VP9 codec in Premiere Pro, excellent compression
 
@@ -88,18 +89,21 @@ Urd Timekeeper includes a special **overlay mode** designed for creating ambient
 **Why this method?** Direct browser capture with built-in transparency support.
 
 1. **Start Chrome with transparency enabled**:
-   
+
    Windows (PowerShell):
+
    ```powershell
    & "C:\Program Files\Google\Chrome\Application\chrome.exe" --enable-transparent-visuals --disable-gpu
    ```
-   
+
    macOS (Terminal):
+
    ```bash
    /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --enable-transparent-visuals --disable-gpu
    ```
 
 2. **Open overlay URL**:
+
    ```
    http://localhost:5174/overlay.html?work=50&break=10&position=top-right
    ```
@@ -125,30 +129,38 @@ Urd Timekeeper includes a special **overlay mode** designed for creating ambient
 **The Solution**: Build a static version and serve it with a simple local server.
 
 1. **Build the project once**:
+
    ```bash
    npm run build
    ```
+
    This creates a `dist/` folder with standalone HTML/CSS/JS files.
 
 2. **Serve the dist folder with a local server**:
 
    **Option A - Using Python (Built-in on most systems)**:
+
    ```bash
    cd dist
    python -m http.server 8000
    ```
+
    Then open: `http://localhost:8000/overlay.html?work=50&break=10&position=top-right`
-   
+
    **Option B - Using Node.js http-server**:
+
    ```bash
    npx http-server dist -p 8000 --cors
    ```
+
    Then open: `http://localhost:8000/overlay.html?work=50&break=10&position=top-right`
-   
+
    **Option C - Using npm script (Recommended)**:
+
    ```bash
    npm run serve
    ```
+
    (This runs the included serve script from package.json)
    Then open the URL shown in terminal.
 
@@ -162,6 +174,7 @@ Urd Timekeeper includes a special **overlay mode** designed for creating ambient
 Modern browsers block ES modules from `file://` protocol for security reasons (CORS policy). You'll get errors like "Cross-Origin request blocked" or "Module source URI is not allowed". Using `http://localhost` solves this.
 
 **Advantages of Static Build Method**:
+
 - ✅ **Stable and persistent** - Server runs until you stop it manually
 - ✅ **Lightweight** - No dev server overhead, just static file serving
 - ✅ **Works offline** - No internet required after build
@@ -203,19 +216,23 @@ Only rebuild (`npm run build`) if you change timer settings or code. For normal 
 ### Troubleshooting
 
 **Circle doesn't animate:**
+
 - Refresh the page and wait 5 seconds for auto-start
 - Check browser console for errors (F12)
 
 **Transparency not working in OBS:**
+
 - Verify Recording Format is MOV (not MP4)
 - Use ProRes 4444 or WebM VP9 encoder
 - Check that "Shutdown source when not visible" is disabled
 
 **Dev server keeps shutting down:**
+
 - Use Method 3 (static build) instead
 - Keep the terminal window open during recording
 
 **CORS errors with file:// URLs:**
+
 - Cannot use `file://` protocol with modern JavaScript modules
 - Use `http://localhost` instead (see Method 3)
 - Python: `python -m http.server 8000` in dist folder
