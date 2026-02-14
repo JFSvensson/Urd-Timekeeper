@@ -11,10 +11,10 @@ describe('UrdTimerDisplayService', () => {
     // Create mock DOM elements
     timeDisplay = document.createElement('div');
     timeDisplay.id = 'time-display';
-    
+
     startStopButton = document.createElement('button');
     startStopButton.id = 'start-stop';
-    
+
     sessionInfo = document.createElement('div');
     sessionInfo.id = 'session-info';
 
@@ -25,7 +25,7 @@ describe('UrdTimerDisplayService', () => {
         if (selector === '#start-stop') return startStopButton;
         if (selector === '#session-info') return sessionInfo;
         return null;
-      })
+      }),
     } as any;
 
     displayService = new UrdTimerDisplayService(mockShadowRoot);
