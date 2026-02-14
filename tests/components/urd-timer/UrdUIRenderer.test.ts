@@ -55,7 +55,7 @@ describe('UrdUIRenderer', () => {
       // Find the keyboard shortcut element
       const shortcutElement = shadowRoot.querySelector('.keyboard-shortcut');
       expect(shortcutElement).toBeTruthy();
-      expect(shortcutElement?.textContent).toBe('Press space to start/pause');
+      expect(shortcutElement?.textContent).toBe('Tryck mellanslag för att starta/pausa');
     });
 
     it('should handle rendering errors gracefully', async () => {
@@ -94,7 +94,7 @@ describe('UrdUIRenderer', () => {
       renderer.renderKeyboardShortcutInfo();
       
       const shortcutElement = shadowRoot.querySelector('.keyboard-shortcut');
-      expect(shortcutElement?.textContent).toBe('Press space to start/pause');
+      expect(shortcutElement?.textContent).toBe('Tryck mellanslag för att starta/pausa');
     });
 
     it('should append element to shadow root', () => {
