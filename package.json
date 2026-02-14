@@ -1,7 +1,7 @@
 {
   "name": "urd-timekeeper",
   "version": "1.0.0",
-  "description": "",
+  "description": "En Pomodoro-timer byggd som vanilla Web Component med stöd för overlay-läge för videoproduktion.",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -11,9 +11,14 @@
     "dev": "vite",
     "serve": "npx http-server dist -p 8000 --cors -o /overlay.html"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["pomodoro", "timer", "web-component", "overlay", "productivity"],
+  "author": "Fredrik Svensson",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JFSvensson/Urd-Timekeeper.git"
+  },
+  "homepage": "https://github.com/JFSvensson/Urd-Timekeeper",
   "devDependencies": {
     "@types/jest": "^29.5.13",
     "@types/node": "^22.7.4",
