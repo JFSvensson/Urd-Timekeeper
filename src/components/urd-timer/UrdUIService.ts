@@ -54,7 +54,7 @@ export class UrdUIService implements UrdTimerObserver {
   private updateSessionInfo(): void {
     const sessionType = this.timerService.getCurrentSession();
     const sessionCount = this.timerService.getCompletedSessions();
-    
+
     this.displayService.updateSessionInfo(sessionType, sessionCount);
     this.progressRingService.updateProgressRingColor(sessionType);
   }
@@ -62,7 +62,7 @@ export class UrdUIService implements UrdTimerObserver {
   private updateProgressRing(timeLeft: number): void {
     const sessionType = this.timerService.getCurrentSession();
     let totalSeconds = 0;
-    
+
     switch (sessionType) {
       case 'work':
         totalSeconds = this.timerService.getWorkDuration();
@@ -74,7 +74,7 @@ export class UrdUIService implements UrdTimerObserver {
         totalSeconds = this.timerService.getLongBreakDuration();
         break;
     }
-    
+
     this.progressRingService.updateProgressRing(timeLeft, totalSeconds);
   }
 }

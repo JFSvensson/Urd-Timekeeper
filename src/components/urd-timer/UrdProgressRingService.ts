@@ -23,16 +23,16 @@ export class UrdProgressRingService {
     // When timeLeft = 0 (no time), we want offset = -circumference (circle hidden, clockwise)
     const progress = timeLeft / totalSeconds;
     const offset = this.circumference * (progress - 1); // Negative offset for clockwise direction
-    
+
     circle.setAttribute('stroke-dashoffset', offset.toString());
   }
 
   updateProgressRingColor(sessionType: string): void {
     const progressCircle = this.shadowRoot.querySelector('.progress-ring__circle');
-    
+
     if (progressCircle) {
       let colorClass = '';
-      
+
       switch (sessionType) {
         case 'work':
           colorClass = 'work';
@@ -44,7 +44,7 @@ export class UrdProgressRingService {
           colorClass = 'long-break';
           break;
       }
-      
+
       progressCircle.classList.remove('work', 'short-break', 'long-break');
       progressCircle.classList.add(colorClass);
     }

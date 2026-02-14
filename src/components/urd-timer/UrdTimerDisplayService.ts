@@ -19,10 +19,10 @@ export class UrdTimerDisplayService {
 
   updateSessionInfo(sessionType: string, sessionCount: number): void {
     const sessionInfo = this.shadowRoot.querySelector('#session-info');
-    
+
     if (sessionInfo) {
       let sessionLabel = '';
-      
+
       switch (sessionType) {
         case 'work':
           sessionLabel = 'Arbete';
@@ -34,7 +34,7 @@ export class UrdTimerDisplayService {
           sessionLabel = 'Lång paus';
           break;
       }
-      
+
       sessionInfo.textContent = `${sessionLabel} · Pomodoros: ${sessionCount}`;
     }
   }

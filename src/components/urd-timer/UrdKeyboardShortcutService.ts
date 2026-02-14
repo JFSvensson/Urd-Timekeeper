@@ -12,7 +12,7 @@ export class UrdKeyboardShortcutService {
         this.timerService.toggle();
       }
     };
-    
+
     document.addEventListener('keydown', this.handleKeyPress);
   }
 
