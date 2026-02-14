@@ -6,6 +6,7 @@ import { SECONDS_PER_MINUTE } from './UrdConstants';
 
 export class UrdTimerService {
   private timer: number | null = null;
+  private expectedTime: number = 0;
   private timeLeft: number;
   private isRunning: boolean = false;
   private observers: UrdTimerObserver[] = [];
@@ -97,20 +98,31 @@ export class UrdTimerService {
 
   start() {
     if (!this.isRunning) {
-      this.timer = window.setInterval(() => {
-        this.timeLeft--;
-        if (this.timeLeft <= 0) {
-          this.switchMode();
-        }
-        this.notifyObservers();
-      }, 1000);
       this.isRunning = true;
+      this.expectedTime = Date.now() + 1000;
+      this.scheduleTick();
     }
+  }
+
+  private scheduleTick(): void {
+    const delay = Math.max(0, this.expectedTime - Date.now());
+    this.timer = window.setTimeout(() => this.tick(), delay);
+  }
+
+  private tick(): void {
+    if (!this.isRunning) return;
+    this.timeLeft--;
+    if (this.timeLeft <= 0) {
+      this.switchMode();
+    }
+    this.notifyObservers();
+    this.expectedTime += 1000;
+    this.scheduleTick();
   }
 
   private pause() {
     if (this.timer) {
-      window.clearInterval(this.timer);
+      window.clearTimeout(this.timer);
       this.timer = null;
     }
     this.isRunning = false;
