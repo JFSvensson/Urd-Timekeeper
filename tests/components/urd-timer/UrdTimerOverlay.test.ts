@@ -12,12 +12,14 @@ jest.mock('../../../src/components/urd-timer/UrdSettingsManager');
 
 jest.mock('../../../src/components/urd-timer/UrdUIService', () => {
   return {
-    UrdUIService: jest.fn().mockImplementation((_shadowRoot, _timerService, _uiRenderer, _domHandler) => ({
-      initialize: jest.fn().mockResolvedValue(undefined),
-      addButtonListeners: jest.fn(),
-      addSettingsEventListeners: jest.fn(),
-      removeKeyboardListener: jest.fn()
-    }))
+    UrdUIService: jest
+      .fn()
+      .mockImplementation((_shadowRoot, _timerService, _uiRenderer, _domHandler) => ({
+        initialize: jest.fn().mockResolvedValue(undefined),
+        addButtonListeners: jest.fn(),
+        addSettingsEventListeners: jest.fn(),
+        removeKeyboardListener: jest.fn(),
+      })),
   };
 });
 
@@ -39,11 +41,17 @@ describe('UrdTimer - Overlay Mode', () => {
     mockSettingsManager = jest.mocked(new UrdSettingsManager(mockStorageService));
 
     mockTimerService = jest.mocked(new UrdTimerService(mockSettingsManager, mockMessageService));
-    mockUIService = jest.mocked(new UrdUIService(null as any, mockTimerService, null as any, null as any));
+    mockUIService = jest.mocked(
+      new UrdUIService(null as any, mockTimerService, null as any, null as any)
+    );
 
-    (UrdTimerService as jest.MockedClass<typeof UrdTimerService>).mockImplementation(() => mockTimerService);
+    (UrdTimerService as jest.MockedClass<typeof UrdTimerService>).mockImplementation(
+      () => mockTimerService
+    );
     (UrdUIService as jest.MockedClass<typeof UrdUIService>).mockImplementation(() => mockUIService);
-    (UrdSettingsManager as jest.MockedClass<typeof UrdSettingsManager>).mockImplementation(() => mockSettingsManager);
+    (UrdSettingsManager as jest.MockedClass<typeof UrdSettingsManager>).mockImplementation(
+      () => mockSettingsManager
+    );
   });
 
   afterEach(() => {
@@ -51,7 +59,7 @@ describe('UrdTimer - Overlay Mode', () => {
     // Reset URL query parameters
     Object.defineProperty(window, 'location', {
       value: { search: '', href: '', origin: '', pathname: '/' },
-      writable: true
+      writable: true,
     });
   });
 
