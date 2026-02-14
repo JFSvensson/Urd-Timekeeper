@@ -3,9 +3,7 @@ import styles from './UrdTimer.css?inline';
 import htmlContent from './UrdTimer.html?raw';
 
 export class UrdUIRenderer implements IUrdUIRenderer {
-  constructor(
-    private shadowRoot: ShadowRoot
-  ) {}
+  constructor(private shadowRoot: ShadowRoot) {}
 
   async render(): Promise<void> {
     try {
