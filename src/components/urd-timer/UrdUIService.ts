@@ -5,7 +5,6 @@ import { UrdUIDOMHandler } from './UrdUIDOMHandler';
 import { UrdTimerDisplayService } from './UrdTimerDisplayService';
 import { UrdProgressRingService } from './UrdProgressRingService';
 import { UrdKeyboardShortcutService } from './UrdKeyboardShortcutService';
-import { SECONDS_PER_MINUTE } from './UrdConstants';
 
 export class UrdUIService implements UrdTimerObserver {
   private readonly INITIAL_TIME_LEFT: number;
@@ -19,7 +18,7 @@ export class UrdUIService implements UrdTimerObserver {
     private uiRenderer: IUrdUIRenderer,
     private domHandler: UrdUIDOMHandler
   ) {
-    this.INITIAL_TIME_LEFT = this.timerService.getWorkDuration() * SECONDS_PER_MINUTE;
+    this.INITIAL_TIME_LEFT = this.timerService.getWorkDuration();
     this.displayService = new UrdTimerDisplayService(shadowRoot);
     this.progressRingService = new UrdProgressRingService(shadowRoot);
     this.keyboardService = new UrdKeyboardShortcutService(timerService);
@@ -46,6 +45,10 @@ export class UrdUIService implements UrdTimerObserver {
 
   addButtonListeners(toggleCallback: () => void, resetCallback: () => void): void {
     this.domHandler.addButtonListeners(toggleCallback, resetCallback);
+  }
+
+  addSettingsEventListeners(): void {
+    this.domHandler.addSettingsEventListeners();
   }
 
   private updateSessionInfo(): void {
