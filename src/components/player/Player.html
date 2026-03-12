@@ -1,7 +1,7 @@
-<div class="player">
+<div class="player" role="group" aria-label="Ljudspelare">
   <div class="player-controls">
-    <button id="mute-toggle" class="player-btn" title="Ljud på/av">
-      <span id="mute-icon">🔊</span>
+    <button id="mute-toggle" class="player-btn" title="Ljud på/av" aria-label="Ljud på/av" aria-pressed="false">
+      <span id="mute-icon" aria-hidden="true">🔊</span>
     </button>
 
     <label class="volume-wrapper" for="volume-slider">
@@ -12,12 +12,12 @@
         max="100"
         value="50"
         class="volume-slider"
-        title="Volym"
+        aria-label="Volym"
       />
     </label>
 
-    <button id="ambient-toggle" class="player-btn" title="Bakgrundsljud på/av">
-      <span id="ambient-icon">🎵</span>
+    <button id="ambient-toggle" class="player-btn" title="Bakgrundsljud på/av" aria-label="Bakgrundsljud på/av" aria-pressed="false">
+      <span id="ambient-icon" aria-hidden="true">🎵</span>
     </button>
   </div>
 </div>
