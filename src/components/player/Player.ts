@@ -94,6 +94,7 @@ export class Player extends HTMLElement {
     if (this.volumeSlider) {
       this.volumeSlider.classList.toggle('muted', muted);
     }
+    this.muteButton?.setAttribute('aria-pressed', String(muted));
   }
 
   private updateAmbientUI(): void {
@@ -101,6 +102,7 @@ export class Player extends HTMLElement {
       this.ambientIcon.textContent = this.ambientPlaying ? '🎶' : '🎵';
     }
     this.ambientButton?.classList.toggle('active', this.ambientPlaying);
+    this.ambientButton?.setAttribute('aria-pressed', String(this.ambientPlaying));
   }
 }
 
