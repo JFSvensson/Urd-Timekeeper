@@ -6,6 +6,8 @@ export class UrdUIDOMHandler {
     shortBreakDuration: null as HTMLInputElement | null,
     longBreakDuration: null as HTMLInputElement | null,
     shortBreaksBeforeLong: null as HTMLInputElement | null,
+    soundEnabled: null as HTMLInputElement | null,
+    volumeSetting: null as HTMLInputElement | null,
   };
   private saveSettingsButton: HTMLButtonElement | null = null;
 
@@ -21,6 +23,8 @@ export class UrdUIDOMHandler {
     this.inputElements.shortBreaksBeforeLong = this.shadowRoot.querySelector(
       '#short-breaks-before-long'
     );
+    this.inputElements.soundEnabled = this.shadowRoot.querySelector('#sound-enabled');
+    this.inputElements.volumeSetting = this.shadowRoot.querySelector('#volume-setting');
     this.saveSettingsButton = this.shadowRoot.querySelector('#save-settings');
   }
 
@@ -31,7 +35,9 @@ export class UrdUIDOMHandler {
         settings.workDuration,
         settings.shortBreakDuration,
         settings.longBreakDuration,
-        settings.shortBreaksBeforeLong
+        settings.shortBreaksBeforeLong,
+        settings.soundEnabled,
+        settings.volume
       );
     });
   }
@@ -48,7 +54,7 @@ export class UrdUIDOMHandler {
     }
   }
 
-  private getUpdatedSettings(): { [key: string]: number } {
+  private getUpdatedSettings() {
     return {
       workDuration: this.inputElements.workDuration
         ? parseInt(this.inputElements.workDuration.value, 10) || 25
@@ -62,6 +68,12 @@ export class UrdUIDOMHandler {
       shortBreaksBeforeLong: this.inputElements.shortBreaksBeforeLong
         ? parseInt(this.inputElements.shortBreaksBeforeLong.value, 10) || 4
         : 4,
+      soundEnabled: this.inputElements.soundEnabled
+        ? this.inputElements.soundEnabled.checked
+        : true,
+      volume: this.inputElements.volumeSetting
+        ? parseInt(this.inputElements.volumeSetting.value, 10) / 100
+        : 0.5,
     };
   }
 }
