@@ -2,11 +2,14 @@ import { UrdUIService } from './UrdUIService';
 import { UrdTimerService } from './UrdTimerService';
 import { StorageService } from '../../services/StorageService';
 import { MessageService } from '../../services/MessageService';
+import { AudioService } from '../../services/AudioService';
 import { BrowserStorageService } from '../../services/BrowserStorageService';
 import { WebPageMessageService } from '../../services/WebPageMessageService';
+import { BrowserAudioService } from '../../services/BrowserAudioService';
 import { UrdUIRenderer } from './UrdUIRenderer';
 import { UrdUIDOMHandler } from './UrdUIDOMHandler';
 import { UrdSettingsManager } from './UrdSettingsManager';
+import { Player } from '../player/Player';
 
 export class UrdTimer extends HTMLElement {
   private timerService: UrdTimerService;
@@ -20,7 +23,8 @@ export class UrdTimer extends HTMLElement {
 
   constructor(
     storageService: StorageService = new BrowserStorageService(),
-    messageService: MessageService = new WebPageMessageService()
+    messageService: MessageService = new WebPageMessageService(),
+    audioService: AudioService = new BrowserAudioService()
   ) {
     super();
     const shadow = this.attachShadow({ mode: 'open' });
@@ -36,7 +40,12 @@ export class UrdTimer extends HTMLElement {
     }
 
     const settingsManager = new UrdSettingsManager(storageService);
-    this.timerService = new UrdTimerService(settingsManager, messageService, this.overlayMode);
+    this.timerService = new UrdTimerService(
+      settingsManager,
+      messageService,
+      this.overlayMode,
+      audioService
+    );
     const uiRenderer = new UrdUIRenderer(shadow);
     const domHandler = new UrdUIDOMHandler(shadow, this.timerService);
     this.uiService = new UrdUIService(shadow, this.timerService, uiRenderer, domHandler);
@@ -65,6 +74,7 @@ export class UrdTimer extends HTMLElement {
     } else {
       this.timerService.loadSettings();
       await this.addEventListeners();
+      this.mountPlayer();
     }
   }
 
@@ -76,9 +86,11 @@ export class UrdTimer extends HTMLElement {
     const params = new URLSearchParams(window.location.search);
 
     if (params.has('work')) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       this.overlayConfig.workDuration = parseInt(params.get('work')!, 10) || 50;
     }
     if (params.has('break')) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       this.overlayConfig.breakDuration = parseInt(params.get('break')!, 10) || 10;
     }
     // Always use center position in overlay mode
@@ -108,7 +120,7 @@ export class UrdTimer extends HTMLElement {
     ];
 
     elementsToHide.forEach((selector) => {
-      const element = this.shadowRoot!.querySelector(selector);
+      const element = this.shadowRoot?.querySelector(selector);
       if (element) {
         (element as HTMLElement).style.display = 'none';
       }
@@ -121,6 +133,20 @@ export class UrdTimer extends HTMLElement {
       () => this.timerService.reset()
     );
     this.uiService.addSettingsEventListeners();
+  }
+
+  private mountPlayer(): void {
+    if (!this.shadowRoot) return;
+    const container = this.shadowRoot.querySelector('#player-container');
+    if (!container) return;
+
+    const player = new Player();
+    container.appendChild(player);
+
+    const audioService = this.timerService.getAudioService();
+    if (audioService) {
+      player.setAudioService(audioService);
+    }
   }
 }
 
