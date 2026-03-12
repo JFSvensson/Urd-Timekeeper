@@ -62,7 +62,9 @@ export class UrdTimerService {
     workDuration: number,
     shortBreakDuration: number,
     longBreakDuration: number,
-    shortBreaksBeforeLong: number
+    shortBreaksBeforeLong: number,
+    soundEnabled?: boolean,
+    volume?: number
   ) {
     const current = this.settingsManager.loadSettings();
     const settings = {
@@ -70,8 +72,8 @@ export class UrdTimerService {
       shortBreakDuration,
       longBreakDuration,
       shortBreaksBeforeLong,
-      soundEnabled: current.soundEnabled,
-      volume: current.volume,
+      soundEnabled: soundEnabled ?? current.soundEnabled,
+      volume: volume ?? current.volume,
     };
 
     this.settingsManager.saveSettings(settings);
@@ -81,6 +83,11 @@ export class UrdTimerService {
     this.shortBreakDuration = settingsInSeconds.shortBreakDuration;
     this.longBreakDuration = settingsInSeconds.longBreakDuration;
     this.shortBreaksBeforeLong = settingsInSeconds.shortBreaksBeforeLong;
+
+    if (this.audioService) {
+      this.audioService.setVolume(settings.volume);
+      this.audioService.setMuted(!settings.soundEnabled);
+    }
 
     this.reset();
   }
