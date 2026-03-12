@@ -1,7 +1,7 @@
-<div class="urd-timer">
+<div class="urd-timer" role="application" aria-label="Urd Timekeeper pomodoro-timer">
   <h1>Urd Timekeeper</h1>
-  <div id="timer-container">
-    <svg class="progress-ring" width="300" height="300" viewBox="0 0 300 300">
+  <div id="timer-container" role="timer" aria-label="Nedräkning">
+    <svg class="progress-ring" width="300" height="300" viewBox="0 0 300 300" aria-hidden="true">
       <circle
         class="progress-ring__circle-bg"
         stroke="#e0e0e0"
@@ -23,28 +23,42 @@
       />
     </svg>
     <div class="timer-content">
-      <div id="session-info"></div>
-      <div id="time-display">25:00</div>
+      <div id="session-info" aria-live="polite"></div>
+      <div id="time-display" aria-live="off" aria-atomic="true">25:00</div>
     </div>
   </div>
-  <button id="start-stop">Start</button>
-  <button id="reset">Reset</button>
+  <div class="controls" role="group" aria-label="Timerkontroller">
+    <button id="start-stop" aria-label="Starta timer">Start</button>
+    <button id="reset" aria-label="Återställ timer">Återställ</button>
+  </div>
   
-  <div class="settings">
-    <label for="work-duration">Work duration (minutes):</label>
-    <input type="number" id="work-duration" min="1" max="120" value="25">
+  <fieldset class="settings">
+    <legend>Inställningar</legend>
+    <label for="work-duration">Arbetslängd (minuter):</label>
+    <input type="number" id="work-duration" min="1" max="120" value="25" aria-describedby="work-desc">
+    <span id="work-desc" class="sr-only">Ange arbetslängd i minuter, 1–120</span>
     
-    <label for="short-break-duration">Short break duration (minutes):</label>
+    <label for="short-break-duration">Kort paus (minuter):</label>
     <input type="number" id="short-break-duration" min="1" max="30" value="5">
     
-    <label for="long-break-duration">Long break duration (minutes):</label>
+    <label for="long-break-duration">Lång paus (minuter):</label>
     <input type="number" id="long-break-duration" min="1" max="60" value="15">
 
-    <label for="short-breaks-before-long">Short breaks before long break:</label>
+    <label for="short-breaks-before-long">Korta pauser före lång paus:</label>
     <input type="number" id="short-breaks-before-long" min="1" max="10" value="4">
-    
-    <button id="save-settings">Save Settings</button>
-  </div>
 
-  <div id="player-container"></div>
+    <fieldset class="sound-settings">
+      <legend>Ljudinställningar</legend>
+      <label class="toggle-label" for="sound-enabled">
+        <input type="checkbox" id="sound-enabled" checked aria-label="Aktivera ljudnotiser" />
+        Ljudnotiser
+      </label>
+      <label for="volume-setting">Volym:</label>
+      <input type="range" id="volume-setting" min="0" max="100" value="50" aria-label="Volym" />
+    </fieldset>
+    
+    <button id="save-settings">Spara inställningar</button>
+  </fieldset>
+
+  <div id="player-container" role="region" aria-label="Ljudspelare"></div>
 </div>
