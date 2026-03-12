@@ -13,7 +13,7 @@ export class UrdTimerDisplayService {
   updateStartStopButton(isRunning: boolean): void {
     const button = this.shadowRoot.querySelector('#start-stop');
     if (button) {
-      button.textContent = isRunning ? 'Pause' : 'Start';
+      button.textContent = isRunning ? 'Paus' : 'Start';
     }
   }
 
