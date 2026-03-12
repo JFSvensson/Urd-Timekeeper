@@ -64,9 +64,9 @@ describe('UrdTimerDisplayService', () => {
   });
 
   describe('updateStartStopButton', () => {
-    test('should show "Pause" when running', () => {
+    test('should show "Paus" when running', () => {
       displayService.updateStartStopButton(true);
-      expect(startStopButton.textContent).toBe('Pause');
+      expect(startStopButton.textContent).toBe('Paus');
     });
 
     test('should show "Start" when not running', () => {
