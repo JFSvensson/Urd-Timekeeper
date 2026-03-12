@@ -1,6 +1,7 @@
 import { UrdTimerObserver } from './UrdTimerObserver';
 import { SessionType } from './UrdSessionType';
 import { MessageService } from '../../services/MessageService';
+import { AudioService } from '../../services/AudioService';
 import { UrdSettingsManager } from './UrdSettingsManager';
 import { SECONDS_PER_MINUTE } from './UrdConstants';
 
@@ -21,7 +22,8 @@ export class UrdTimerService {
   constructor(
     private settingsManager: UrdSettingsManager,
     private messageService: MessageService,
-    overlayMode: boolean = false
+    overlayMode: boolean = false,
+    private audioService: AudioService | null = null
   ) {
     this.overlayMode = overlayMode;
     const settings = this.settingsManager.loadSettings();
@@ -31,6 +33,12 @@ export class UrdTimerService {
     this.longBreakDuration = settingsInSeconds.longBreakDuration;
     this.shortBreaksBeforeLong = settingsInSeconds.shortBreaksBeforeLong;
     this.timeLeft = this.workDuration;
+
+    // Apply saved sound settings
+    if (this.audioService) {
+      this.audioService.setVolume(settings.volume);
+      this.audioService.setMuted(!settings.soundEnabled);
+    }
   }
 
   addObserver(observer: UrdTimerObserver) {
@@ -56,11 +64,14 @@ export class UrdTimerService {
     longBreakDuration: number,
     shortBreaksBeforeLong: number
   ) {
+    const current = this.settingsManager.loadSettings();
     const settings = {
       workDuration,
       shortBreakDuration,
       longBreakDuration,
       shortBreaksBeforeLong,
+      soundEnabled: current.soundEnabled,
+      volume: current.volume,
     };
 
     this.settingsManager.saveSettings(settings);
@@ -161,6 +172,7 @@ export class UrdTimerService {
     }
     this.notifyObservers();
     this.notifyUser();
+    this.audioService?.playNotification(this.currentSession);
 
     // Auto-start next session in overlay mode after 5 seconds
     if (this.overlayMode) {
@@ -190,6 +202,10 @@ export class UrdTimerService {
 
   getIsRunning(): boolean {
     return this.isRunning;
+  }
+
+  getAudioService(): AudioService | null {
+    return this.audioService;
   }
 
   getConfig() {
