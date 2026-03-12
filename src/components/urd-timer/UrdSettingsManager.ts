@@ -12,6 +12,8 @@ export interface TimerSettings {
   shortBreakDuration: number;
   longBreakDuration: number;
   shortBreaksBeforeLong: number;
+  soundEnabled: boolean;
+  volume: number;
 }
 
 export class UrdSettingsManager {
@@ -25,6 +27,8 @@ export class UrdSettingsManager {
       shortBreakDuration: DEFAULT_SHORT_BREAK_DURATION,
       longBreakDuration: DEFAULT_LONG_BREAK_DURATION,
       shortBreaksBeforeLong: DEFAULT_SHORT_BREAKS_BEFORE_LONG,
+      soundEnabled: true,
+      volume: 0.5,
     };
   }
 
@@ -67,17 +71,25 @@ export class UrdSettingsManager {
         settings.shortBreaksBeforeLong,
         defaults.shortBreaksBeforeLong
       ),
+      soundEnabled:
+        typeof settings.soundEnabled === 'boolean' ? settings.soundEnabled : defaults.soundEnabled,
+      volume: this.validateVolume(settings.volume, defaults.volume),
     };
   }
 
-  private validateDuration(value: any, defaultValue: number): number {
+  private validateDuration(value: unknown, defaultValue: number): number {
     const num = Number(value);
     return !isNaN(num) && num > 0 && num <= 120 ? num : defaultValue;
   }
 
-  private validateCount(value: any, defaultValue: number): number {
+  private validateCount(value: unknown, defaultValue: number): number {
     const num = Number(value);
     return !isNaN(num) && num > 0 && num <= 10 ? num : defaultValue;
+  }
+
+  private validateVolume(value: unknown, defaultValue: number): number {
+    const num = Number(value);
+    return !isNaN(num) && num >= 0 && num <= 1 ? num : defaultValue;
   }
 
   getSettingsInSeconds(settings: TimerSettings) {
