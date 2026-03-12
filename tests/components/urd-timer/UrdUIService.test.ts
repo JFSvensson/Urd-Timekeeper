@@ -132,7 +132,7 @@ describe('UrdUIService', () => {
     it('should update start/stop button text when running', () => {
       uiService.update(1500, true);
       const button = shadowRoot.querySelector('#start-stop');
-      expect(button?.textContent).toBe('Pause');
+      expect(button?.textContent).toBe('Paus');
     });
 
     it('should update start/stop button text when paused', () => {
