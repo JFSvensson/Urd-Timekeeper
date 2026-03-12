@@ -61,12 +61,21 @@ describe('UrdSettingsManager', () => {
       expect(settings.shortBreaksBeforeLong).toBe(DEFAULT_SHORT_BREAKS_BEFORE_LONG);
     });
 
+    test('should return default sound settings', () => {
+      const defaults = settingsManager.getDefaults();
+
+      expect(defaults.soundEnabled).toBe(true);
+      expect(defaults.volume).toBe(0.5);
+    });
+
     test('should load saved settings from storage', () => {
       const savedSettings: TimerSettings = {
         workDuration: 30,
         shortBreakDuration: 10,
         longBreakDuration: 20,
         shortBreaksBeforeLong: 3,
+        soundEnabled: true,
+        volume: 0.5,
       };
 
       mockStorageService.setItem('urdTimerSettings', JSON.stringify(savedSettings));
@@ -122,6 +131,8 @@ describe('UrdSettingsManager', () => {
         shortBreakDuration: 12,
         longBreakDuration: 25,
         shortBreaksBeforeLong: 6,
+        soundEnabled: true,
+        volume: 0.7,
       };
 
       settingsManager.saveSettings(settings);
@@ -129,6 +140,7 @@ describe('UrdSettingsManager', () => {
       const saved = mockStorageService.getItem('urdTimerSettings');
       expect(saved).toBeTruthy();
 
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const parsed = JSON.parse(saved!);
       expect(parsed).toEqual(settings);
     });
@@ -139,11 +151,14 @@ describe('UrdSettingsManager', () => {
         shortBreakDuration: -5,
         longBreakDuration: 15,
         shortBreaksBeforeLong: 20,
+        soundEnabled: true,
+        volume: 0.5,
       } as TimerSettings;
 
       settingsManager.saveSettings(invalidSettings);
 
       const saved = mockStorageService.getItem('urdTimerSettings');
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const parsed = JSON.parse(saved!);
 
       expect(parsed.workDuration).toBe(DEFAULT_WORK_DURATION);
@@ -159,6 +174,8 @@ describe('UrdSettingsManager', () => {
         shortBreakDuration: 5,
         longBreakDuration: 15,
         shortBreaksBeforeLong: 4,
+        soundEnabled: true,
+        volume: 0.5,
       };
 
       const settingsInSeconds = settingsManager.getSettingsInSeconds(settings);
@@ -177,9 +194,12 @@ describe('UrdSettingsManager', () => {
         shortBreakDuration: 60,
         longBreakDuration: 120,
         shortBreaksBeforeLong: 5,
+        soundEnabled: false,
+        volume: 0.3,
       };
 
       settingsManager.saveSettings(settings);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const saved = JSON.parse(mockStorageService.getItem('urdTimerSettings')!);
 
       expect(saved.workDuration).toBe(1);
@@ -193,9 +213,12 @@ describe('UrdSettingsManager', () => {
         shortBreakDuration: 5,
         longBreakDuration: 15,
         shortBreaksBeforeLong: 10,
+        soundEnabled: true,
+        volume: 0.5,
       };
 
       settingsManager.saveSettings(settings);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const saved = JSON.parse(mockStorageService.getItem('urdTimerSettings')!);
 
       expect(saved.shortBreaksBeforeLong).toBe(10);
