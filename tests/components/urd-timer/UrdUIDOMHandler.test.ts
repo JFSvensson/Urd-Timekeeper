@@ -79,6 +79,8 @@ describe('UrdUIDOMHandler', () => {
         <input id="short-break-duration" value="10" />
         <input id="long-break-duration" value="20" />
         <input id="short-breaks-before-long" value="3" />
+        <input type="checkbox" id="sound-enabled" checked />
+        <input type="range" id="volume-setting" value="70" />
         <button id="save-settings">Save</button>
       `;
 
@@ -91,7 +93,7 @@ describe('UrdUIDOMHandler', () => {
       const saveButton = shadowRoot.querySelector('#save-settings') as HTMLButtonElement;
       saveButton.click();
 
-      expect(updateSettingsSpy).toHaveBeenCalledWith(30, 10, 20, 3);
+      expect(updateSettingsSpy).toHaveBeenCalledWith(30, 10, 20, 3, true, 0.7);
     });
 
     it('should use default values for invalid input', () => {
@@ -113,7 +115,7 @@ describe('UrdUIDOMHandler', () => {
       saveButton.click();
 
       // Should use default values
-      expect(updateSettingsSpy).toHaveBeenCalledWith(25, 5, 15, 4);
+      expect(updateSettingsSpy).toHaveBeenCalledWith(25, 5, 15, 4, true, 0.5);
     });
 
     it('should handle missing save button gracefully', () => {
@@ -142,7 +144,7 @@ describe('UrdUIDOMHandler', () => {
       saveButton.click();
 
       // Should use all default values when inputs are missing
-      expect(updateSettingsSpy).toHaveBeenCalledWith(25, 5, 15, 4);
+      expect(updateSettingsSpy).toHaveBeenCalledWith(25, 5, 15, 4, true, 0.5);
     });
   });
 
@@ -249,6 +251,8 @@ describe('UrdUIDOMHandler', () => {
         <input id="short-break-duration" value="7" />
         <input id="long-break-duration" value="18" />
         <input id="short-breaks-before-long" value="5" />
+        <input type="checkbox" id="sound-enabled" checked />
+        <input type="range" id="volume-setting" value="50" />
         <button id="save-settings">Save</button>
         <button id="start-stop">Start</button>
         <button id="reset">Reset</button>
@@ -271,7 +275,7 @@ describe('UrdUIDOMHandler', () => {
       const resetButton = shadowRoot.querySelector('#reset') as HTMLButtonElement;
 
       saveButton.click();
-      expect(updateSettingsSpy).toHaveBeenCalledWith(45, 7, 18, 5);
+      expect(updateSettingsSpy).toHaveBeenCalledWith(45, 7, 18, 5, true, 0.5);
 
       startStopButton.click();
       expect(toggleCallback).toHaveBeenCalledTimes(1);
@@ -305,7 +309,51 @@ describe('UrdUIDOMHandler', () => {
       saveButton.click();
 
       // Should use new value
-      expect(updateSettingsSpy).toHaveBeenCalledWith(50, 5, 15, 4);
+      expect(updateSettingsSpy).toHaveBeenCalledWith(50, 5, 15, 4, true, 0.5);
+    });
+  });
+
+  describe('sound settings', () => {
+    it('should pass sound disabled when checkbox is unchecked', () => {
+      shadowRoot.innerHTML = `
+        <input id="work-duration" value="25" />
+        <input id="short-break-duration" value="5" />
+        <input id="long-break-duration" value="15" />
+        <input id="short-breaks-before-long" value="4" />
+        <input type="checkbox" id="sound-enabled" />
+        <input type="range" id="volume-setting" value="80" />
+        <button id="save-settings">Save</button>
+      `;
+
+      domHandler.initializeDOMElements();
+      const updateSettingsSpy = jest.spyOn(timerService, 'updateSettings');
+      domHandler.addSettingsEventListeners();
+
+      const saveButton = shadowRoot.querySelector('#save-settings') as HTMLButtonElement;
+      saveButton.click();
+
+      expect(updateSettingsSpy).toHaveBeenCalledWith(25, 5, 15, 4, false, 0.8);
+    });
+
+    it('should convert volume slider (0-100) to 0-1 range', () => {
+      shadowRoot.innerHTML = `
+        <input id="work-duration" value="25" />
+        <input id="short-break-duration" value="5" />
+        <input id="long-break-duration" value="15" />
+        <input id="short-breaks-before-long" value="4" />
+        <input type="checkbox" id="sound-enabled" checked />
+        <input type="range" id="volume-setting" value="0" />
+        <button id="save-settings">Save</button>
+      `;
+
+      domHandler.initializeDOMElements();
+      const updateSettingsSpy = jest.spyOn(timerService, 'updateSettings');
+      domHandler.addSettingsEventListeners();
+
+      const saveButton = shadowRoot.querySelector('#save-settings') as HTMLButtonElement;
+      saveButton.click();
+
+      expect(updateSettingsSpy).toHaveBeenCalledWith(25, 5, 15, 4, true, 0);
     });
   });
 });
