@@ -2,6 +2,7 @@ import { UrdTimerService } from '../../../src/components/urd-timer/UrdTimerServi
 import { SessionType } from '../../../src/components/urd-timer/UrdSessionType';
 import { StorageService } from '../../../src/services/StorageService';
 import { MessageService } from '../../../src/services/MessageService';
+import { SessionHistoryService } from '../../../src/services/SessionHistoryService';
 import { UrdSettingsManager } from '../../../src/components/urd-timer/UrdSettingsManager';
 import {
   SECONDS_PER_MINUTE,
@@ -163,6 +164,7 @@ describe('UrdTimerService', () => {
     const savedData = mockStorageService.getItem('urdTimerSettings');
     expect(savedData).toBeTruthy();
 
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const parsed = JSON.parse(savedData!);
     expect(parsed.workDuration).toBe(45);
     expect(parsed.shortBreakDuration).toBe(15);
@@ -188,5 +190,56 @@ describe('UrdTimerService', () => {
     expect(config.shortBreakDuration).toBe(12);
     expect(config.longBreakDuration).toBe(25);
     expect(config.shortBreaksBeforeLong).toBe(6);
+  });
+
+  test('should return settings via getSettings()', () => {
+    const settings = timerService.getSettings();
+
+    expect(settings).toHaveProperty('workDuration');
+    expect(settings).toHaveProperty('shortBreakDuration');
+    expect(settings).toHaveProperty('longBreakDuration');
+    expect(settings).toHaveProperty('shortBreaksBeforeLong');
+    expect(settings).toHaveProperty('soundEnabled');
+    expect(settings).toHaveProperty('volume');
+  });
+
+  test('should return null session history when none provided', () => {
+    expect(timerService.getSessionHistory()).toBeNull();
+  });
+
+  test('should return session history when provided', () => {
+    const historyService = new SessionHistoryService(mockStorageService);
+    const serviceWithHistory = new UrdTimerService(
+      settingsManager,
+      mockMessageService,
+      false,
+      null,
+      historyService
+    );
+
+    expect(serviceWithHistory.getSessionHistory()).toBe(historyService);
+  });
+
+  test('should record completed work session on switch', () => {
+    const historyService = new SessionHistoryService(mockStorageService);
+    const serviceWithHistory = new UrdTimerService(
+      settingsManager,
+      mockMessageService,
+      false,
+      null,
+      historyService
+    );
+
+    jest.useFakeTimers();
+    serviceWithHistory.toggle();
+
+    // Advance past work duration to trigger switchMode
+    jest.advanceTimersByTime((DEFAULT_WORK_DURATION * SECONDS_PER_MINUTE + 2) * 1000);
+
+    const stats = historyService.getWorkStats();
+    expect(stats.allTime).toBe(1);
+    expect(stats.today).toBe(1);
+
+    jest.useRealTimers();
   });
 });
