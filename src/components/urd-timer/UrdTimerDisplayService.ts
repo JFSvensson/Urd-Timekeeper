@@ -1,3 +1,5 @@
+import { SessionStats } from '../../services/SessionHistoryService';
+
 export class UrdTimerDisplayService {
   constructor(private shadowRoot: ShadowRoot) {}
 
@@ -37,5 +39,25 @@ export class UrdTimerDisplayService {
 
       sessionInfo.textContent = `${sessionLabel} · Pomodoros: ${sessionCount}`;
     }
+  }
+
+  updateStats(stats: SessionStats): void {
+    const statsEl = this.shadowRoot.querySelector('#session-stats');
+    if (!statsEl) return;
+
+    statsEl.innerHTML = `
+      <div class="stat">
+        <span class="stat-value">${stats.today}</span>
+        <span class="stat-label">Idag</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value">${stats.thisWeek}</span>
+        <span class="stat-label">Denna vecka</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value">${stats.allTime}</span>
+        <span class="stat-label">Totalt</span>
+      </div>
+    `;
   }
 }
