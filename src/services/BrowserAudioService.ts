@@ -11,20 +11,39 @@ export class BrowserAudioService implements AudioService {
   private audioContext: AudioContext | null = null;
   private volume: number = 0.5;
   private muted: boolean = false;
+  private hasLoggedAudioUnavailable: boolean = false;
   private ambientOscillator: OscillatorNode | null = null;
   private ambientGain: GainNode | null = null;
 
-  private getContext(): AudioContext {
-    if (!this.audioContext) {
-      this.audioContext = new AudioContext();
+  private getContext(): AudioContext | null {
+    if (typeof AudioContext === 'undefined') {
+      this.logAudioUnavailable();
+      return null;
     }
+
+    if (!this.audioContext) {
+      try {
+        this.audioContext = new AudioContext();
+      } catch (error) {
+        this.logAudioUnavailable(error);
+        return null;
+      }
+    }
+
     return this.audioContext;
+  }
+
+  private logAudioUnavailable(error?: unknown): void {
+    if (this.hasLoggedAudioUnavailable) return;
+    this.hasLoggedAudioUnavailable = true;
+    console.warn('Web Audio API unavailable, sound is disabled for this session.', error);
   }
 
   playNotification(sessionType: SessionType): void {
     if (this.muted) return;
 
     const ctx = this.getContext();
+    if (!ctx) return;
     const now = ctx.currentTime;
 
     switch (sessionType) {
@@ -51,6 +70,7 @@ export class BrowserAudioService implements AudioService {
     if (this.ambientOscillator) return; // already playing
 
     const ctx = this.getContext();
+    if (!ctx) return;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
 
@@ -81,7 +101,9 @@ export class BrowserAudioService implements AudioService {
   setVolume(volume: number): void {
     this.volume = Math.max(0, Math.min(1, volume));
     if (this.ambientGain) {
-      this.ambientGain.gain.setValueAtTime(this.volume * 0.08, this.getContext().currentTime);
+      const ctx = this.getContext();
+      if (!ctx) return;
+      this.ambientGain.gain.setValueAtTime(this.volume * 0.08, ctx.currentTime);
     }
   }
 
