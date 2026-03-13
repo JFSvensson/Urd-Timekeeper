@@ -94,7 +94,7 @@ describe('BrowserStorageService', () => {
       };
       storageService.setItem('urdTimerSettings', JSON.stringify(settings));
 
-      const retrieved = JSON.parse(storageService.getItem('urdTimerSettings')!);
+      const retrieved = JSON.parse(storageService.getItem('urdTimerSettings') as string);
       expect(retrieved).toEqual(settings);
     });
   });
