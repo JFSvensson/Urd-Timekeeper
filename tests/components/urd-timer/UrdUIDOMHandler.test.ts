@@ -356,4 +356,82 @@ describe('UrdUIDOMHandler', () => {
       expect(updateSettingsSpy).toHaveBeenCalledWith(25, 5, 15, 4, true, 0);
     });
   });
+
+  describe('populateSettings', () => {
+    it('should populate all input fields from settings', () => {
+      shadowRoot.innerHTML = `
+        <input id="work-duration" value="" />
+        <input id="short-break-duration" value="" />
+        <input id="long-break-duration" value="" />
+        <input id="short-breaks-before-long" value="" />
+        <input type="checkbox" id="sound-enabled" />
+        <input type="range" id="volume-setting" value="50" />
+        <button id="save-settings">Save</button>
+      `;
+
+      domHandler.initializeDOMElements();
+      domHandler.populateSettings({
+        workDuration: 30,
+        shortBreakDuration: 10,
+        longBreakDuration: 20,
+        shortBreaksBeforeLong: 3,
+        soundEnabled: true,
+        volume: 0.8,
+      });
+
+      expect((shadowRoot.querySelector('#work-duration') as HTMLInputElement).value).toBe('30');
+      expect((shadowRoot.querySelector('#short-break-duration') as HTMLInputElement).value).toBe(
+        '10'
+      );
+      expect((shadowRoot.querySelector('#long-break-duration') as HTMLInputElement).value).toBe(
+        '20'
+      );
+      expect(
+        (shadowRoot.querySelector('#short-breaks-before-long') as HTMLInputElement).value
+      ).toBe('3');
+      expect((shadowRoot.querySelector('#sound-enabled') as HTMLInputElement).checked).toBe(true);
+      expect((shadowRoot.querySelector('#volume-setting') as HTMLInputElement).value).toBe('80');
+    });
+
+    it('should handle sound disabled', () => {
+      shadowRoot.innerHTML = `
+        <input id="work-duration" value="" />
+        <input id="short-break-duration" value="" />
+        <input id="long-break-duration" value="" />
+        <input id="short-breaks-before-long" value="" />
+        <input type="checkbox" id="sound-enabled" checked />
+        <input type="range" id="volume-setting" value="50" />
+        <button id="save-settings">Save</button>
+      `;
+
+      domHandler.initializeDOMElements();
+      domHandler.populateSettings({
+        workDuration: 25,
+        shortBreakDuration: 5,
+        longBreakDuration: 15,
+        shortBreaksBeforeLong: 4,
+        soundEnabled: false,
+        volume: 0.3,
+      });
+
+      expect((shadowRoot.querySelector('#sound-enabled') as HTMLInputElement).checked).toBe(false);
+      expect((shadowRoot.querySelector('#volume-setting') as HTMLInputElement).value).toBe('30');
+    });
+
+    it('should handle missing DOM elements gracefully', () => {
+      shadowRoot.innerHTML = '';
+      domHandler.initializeDOMElements();
+
+      expect(() =>
+        domHandler.populateSettings({
+          workDuration: 25,
+          shortBreakDuration: 5,
+          longBreakDuration: 15,
+          shortBreaksBeforeLong: 4,
+          soundEnabled: true,
+          volume: 0.5,
+        })
+      ).not.toThrow();
+    });
+  });
 });
