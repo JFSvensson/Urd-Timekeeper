@@ -1,4 +1,5 @@
 import { UrdTimerService } from './UrdTimerService';
+import { TimerSettings } from './UrdSettingsManager';
 
 export class UrdUIDOMHandler {
   private inputElements = {
@@ -26,6 +27,27 @@ export class UrdUIDOMHandler {
     this.inputElements.soundEnabled = this.shadowRoot.querySelector('#sound-enabled');
     this.inputElements.volumeSetting = this.shadowRoot.querySelector('#volume-setting');
     this.saveSettingsButton = this.shadowRoot.querySelector('#save-settings');
+  }
+
+  populateSettings(settings: TimerSettings): void {
+    if (this.inputElements.workDuration) {
+      this.inputElements.workDuration.value = String(settings.workDuration);
+    }
+    if (this.inputElements.shortBreakDuration) {
+      this.inputElements.shortBreakDuration.value = String(settings.shortBreakDuration);
+    }
+    if (this.inputElements.longBreakDuration) {
+      this.inputElements.longBreakDuration.value = String(settings.longBreakDuration);
+    }
+    if (this.inputElements.shortBreaksBeforeLong) {
+      this.inputElements.shortBreaksBeforeLong.value = String(settings.shortBreaksBeforeLong);
+    }
+    if (this.inputElements.soundEnabled) {
+      this.inputElements.soundEnabled.checked = settings.soundEnabled;
+    }
+    if (this.inputElements.volumeSetting) {
+      this.inputElements.volumeSetting.value = String(Math.round(settings.volume * 100));
+    }
   }
 
   addSettingsEventListeners(): void {
