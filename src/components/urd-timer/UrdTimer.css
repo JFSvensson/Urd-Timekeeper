@@ -392,6 +392,34 @@ fieldset.settings > legend {
   flex-wrap: wrap;
 }
 
+/* Session statistics */
+.session-stats {
+  margin-top: 24px;
+  padding: 14px 20px;
+  background-color: var(--color-surface);
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-around;
+  gap: 16px;
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.session-stats .stat {
+  text-align: center;
+}
+
+.session-stats .stat-value {
+  display: block;
+  font-size: 1.5em;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.session-stats .stat-label {
+  font-size: 0.85em;
+}
+
 /* Responsive */
 @media (max-width: 480px) {
   .urd-timer {
