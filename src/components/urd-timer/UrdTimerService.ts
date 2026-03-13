@@ -2,6 +2,7 @@ import { UrdTimerObserver } from './UrdTimerObserver';
 import { SessionType } from './UrdSessionType';
 import { MessageService } from '../../services/MessageService';
 import { AudioService } from '../../services/AudioService';
+import { SessionHistoryService } from '../../services/SessionHistoryService';
 import { UrdSettingsManager } from './UrdSettingsManager';
 import { SECONDS_PER_MINUTE } from './UrdConstants';
 
@@ -23,7 +24,8 @@ export class UrdTimerService {
     private settingsManager: UrdSettingsManager,
     private messageService: MessageService,
     overlayMode: boolean = false,
-    private audioService: AudioService | null = null
+    private audioService: AudioService | null = null,
+    private sessionHistory: SessionHistoryService | null = null
   ) {
     this.overlayMode = overlayMode;
     const settings = this.settingsManager.loadSettings();
@@ -164,6 +166,9 @@ export class UrdTimerService {
   }
 
   private switchMode() {
+    // Record the completed session before switching
+    this.recordCompletedSession();
+
     this.completedSessions++;
     if (this.currentSession === SessionType.Work) {
       if (this.completedSessions % this.shortBreaksBeforeLong === 0) {
@@ -215,6 +220,28 @@ export class UrdTimerService {
     return this.audioService;
   }
 
+  getSessionHistory(): SessionHistoryService | null {
+    return this.sessionHistory;
+  }
+
+  private recordCompletedSession(): void {
+    if (!this.sessionHistory) return;
+    const typeMap: Record<SessionType, 'work' | 'shortBreak' | 'longBreak'> = {
+      [SessionType.Work]: 'work',
+      [SessionType.ShortBreak]: 'shortBreak',
+      [SessionType.LongBreak]: 'longBreak',
+    };
+    const durationMap: Record<SessionType, number> = {
+      [SessionType.Work]: this.workDuration / SECONDS_PER_MINUTE,
+      [SessionType.ShortBreak]: this.shortBreakDuration / SECONDS_PER_MINUTE,
+      [SessionType.LongBreak]: this.longBreakDuration / SECONDS_PER_MINUTE,
+    };
+    this.sessionHistory.recordSession(
+      typeMap[this.currentSession],
+      durationMap[this.currentSession]
+    );
+  }
+
   getConfig() {
     return {
       workDuration: this.workDuration / SECONDS_PER_MINUTE,
@@ -222,6 +249,10 @@ export class UrdTimerService {
       longBreakDuration: this.longBreakDuration / SECONDS_PER_MINUTE,
       shortBreaksBeforeLong: this.shortBreaksBeforeLong,
     };
+  }
+
+  getSettings() {
+    return this.settingsManager.loadSettings();
   }
 
   getState() {
