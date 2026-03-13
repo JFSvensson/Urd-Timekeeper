@@ -4,15 +4,18 @@ Urd Timekeeper is a Pomodoro timer web application that helps you manage your ti
 
 ## Features
 
-- ✅ Pomodoro timer with 25-minute work intervals and 5-minute breaks
-- ✅ Start, pause, and resume functionality
-- ✅ Circular progress indicator showing remaining time
-- ✅ Visual feedback with color-coded sessions (green for work, blue for short break, orange for long break)
-- ✅ Session counter tracking completed Pomodoros
-- ✅ Notifications when a session is complete
-- ✅ Keyboard shortcuts (Space bar to start/pause)
-- ✅ Customizable time intervals with persistent settings
-- ✅ Clean, modern UI with smooth animations
+- ✅ Pomodoro timer with customizable work, short break, and long break intervals
+- ✅ Start, pause, resume, and reset functionality
+- ✅ Circular progress indicator with session-specific color states
+- ✅ Session counter and automatic work/break switching
+- ✅ Persistent settings (including sound and volume) via browser storage
+- ✅ Keyboard shortcuts (Space to start/pause)
+- ✅ Toast notifications and Browser Notifications API support
+- ✅ Procedural sound notifications and ambient player controls (mute/volume)
+- ✅ Session statistics (today, this week, all time)
+- ✅ Dark mode support, ARIA improvements, and responsive layout
+- ✅ Overlay mode for video production workflows
+- ✅ PWA foundation (manifest + favicon)
 
 ## Installation
 
@@ -238,15 +241,49 @@ Only rebuild (`npm run build`) if you change timer settings or code. For normal 
 - Python: `python -m http.server 8000` in dist folder
 - Node: `npx http-server dist -p 8000`
 
-## Future Features
+## Release Milestones
 
-- [ ] Sound notifications
-- [ ] Integrated task list
-- [ ] Statistics and reports
-- [ ] Theme toggle (light/dark mode)
-- [ ] Multi-language support
-- [ ] Browser notifications API
-- [ ] Export session history
+### v1.0.1 - Hardening and Documentation
+
+Focus: stabilize current feature set and align docs/release process.
+
+Acceptance criteria:
+
+- [ ] README, feature list, and roadmap are synchronized with implemented functionality
+- [ ] Release checklist is documented and usable by maintainers
+- [ ] Quality gate passes locally: `npm run quality:gate`
+- [ ] Browser smoke tests executed for main timer and overlay mode
+- [ ] Accessibility smoke checks completed (keyboard flow + visible focus + live region updates)
+
+### v1.1 - PWA and Quality Expansion
+
+Focus: offline-readiness and stronger confidence before wider rollout.
+
+Acceptance criteria:
+
+- [ ] Service worker added and registered
+- [ ] Offline app shell behavior validated after first load
+- [ ] E2E smoke tests cover timer flow, settings persistence, and overlay query params
+- [ ] CI includes E2E gate for release branches/tags
+
+### v1.2 - Product Expansion
+
+Focus: non-blocking enhancements after stability milestones.
+
+Candidate scope:
+
+- [ ] i18n foundation
+- [ ] Session history export/import
+- [ ] Visual regression tests
+- [ ] Optional advanced UX improvements
+
+## Updated Roadmap (Short Form)
+
+1. Documentation and release hardening (v1.0.1)
+2. Offline + E2E confidence layer (v1.1)
+3. Product expansion backlog (v1.2)
+
+See `RELEASE_CHECKLIST.md` for release gates and verification steps.
 
 ## Contributing
 
