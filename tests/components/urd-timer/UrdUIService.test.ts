@@ -63,6 +63,7 @@ describe('UrdUIService', () => {
 
     mockDomHandler = {
       initializeDOMElements: jest.fn(),
+      populateSettings: jest.fn(),
       addButtonListeners: jest.fn(),
       addSettingsEventListeners: jest.fn(),
     } as any;
