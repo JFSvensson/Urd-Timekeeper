@@ -2,6 +2,8 @@ import { MessageService } from './MessageService';
 
 export class WebPageMessageService implements MessageService {
   private messageElement: HTMLElement | null = null;
+  private hasShownNotificationHint: boolean = false;
+  private isRequestingPermission: boolean = false;
 
   constructor() {
     this.createMessageElement();
@@ -24,8 +26,35 @@ export class WebPageMessageService implements MessageService {
   }
 
   private requestNotificationPermission(): void {
-    if ('Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission();
+    if (!('Notification' in window)) {
+      return;
+    }
+
+    if (Notification.permission === 'denied') {
+      this.showNotificationHint(
+        'Webblasarnotiser ar avstangda. Timern visar fortsatt notiser i appen.'
+      );
+      return;
+    }
+
+    if (Notification.permission === 'default' && !this.isRequestingPermission) {
+      this.isRequestingPermission = true;
+      Notification.requestPermission()
+        .then((permission) => {
+          if (permission === 'denied') {
+            this.showNotificationHint(
+              'Webblasarnotiser nekades. Du kan aktivera dem i webblasarens installningar.'
+            );
+          }
+        })
+        .catch(() => {
+          this.showNotificationHint(
+            'Kunde inte fraga efter webblasarnotiser. Timern fortsatter med inbyggda notiser.'
+          );
+        })
+        .finally(() => {
+          this.isRequestingPermission = false;
+        });
     }
   }
 
@@ -47,11 +76,34 @@ export class WebPageMessageService implements MessageService {
   }
 
   private showBrowserNotification(message: string): void {
-    if ('Notification' in window && Notification.permission === 'granted') {
+    if (!('Notification' in window)) {
+      return;
+    }
+
+    if (Notification.permission === 'granted') {
       new Notification('Urd Timekeeper', {
         body: message,
         icon: '/favicon.svg',
       });
+      return;
     }
+
+    if (Notification.permission === 'default') {
+      this.showNotificationHint(
+        'Webblasarnotiser ar inte aktiverade an. Timern visar fortsatt notiser i appen.'
+      );
+      this.requestNotificationPermission();
+      return;
+    }
+
+    this.showNotificationHint(
+      'Webblasarnotiser ar avstangda. Timern visar fortsatt notiser i appen.'
+    );
+  }
+
+  private showNotificationHint(message: string): void {
+    if (this.hasShownNotificationHint) return;
+    this.hasShownNotificationHint = true;
+    this.showToast(message);
   }
 }
