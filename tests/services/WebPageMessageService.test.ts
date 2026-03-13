@@ -1,5 +1,7 @@
 import { WebPageMessageService } from '../../src/services/WebPageMessageService';
 
+const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0));
+
 describe('WebPageMessageService', () => {
   let webPageMessageService: WebPageMessageService;
   let mockAppendChild: jest.SpyInstance;
@@ -38,6 +40,7 @@ describe('WebPageMessageService', () => {
   });
 
   test('showMessage displays the message and hides it after 3 seconds', () => {
+    (window as any).Notification.permission = 'granted';
     jest.useFakeTimers();
 
     const testMessage = 'Test message';
@@ -70,6 +73,7 @@ describe('WebPageMessageService', () => {
 
   test('should show browser notification when permission is granted', () => {
     (window as any).Notification.permission = 'granted';
+    (window as any).Notification.mockClear();
 
     webPageMessageService.showMessage('Dags att arbeta!');
 
@@ -81,12 +85,8 @@ describe('WebPageMessageService', () => {
 
   test('should not show browser notification when permission is denied', () => {
     (window as any).Notification.permission = 'denied';
-
-    webPageMessageService.showMessage('Test');
-
-    // Notification constructor called only during setup, not for showing
-    // Reset call count to check only showMessage calls
     (window as any).Notification.mockClear();
+
     webPageMessageService.showMessage('Test');
 
     expect((window as any).Notification).not.toHaveBeenCalled();
@@ -101,5 +101,38 @@ describe('WebPageMessageService', () => {
     expect((window as any).Notification.requestPermission).not.toHaveBeenCalled();
     // Suppress unused variable warning
     expect(service).toBeDefined();
+  });
+
+  test('should show UI hint when notifications are denied at startup', () => {
+    (window as any).Notification.permission = 'denied';
+
+    const service = new WebPageMessageService();
+
+    expect(service['messageElement']?.textContent).toContain('Webblasarnotiser ar avstangda');
+  });
+
+  test('should show UI hint when permission request is denied', async () => {
+    (window as any).Notification.permission = 'default';
+    (window as any).Notification.requestPermission = jest.fn().mockResolvedValue('denied');
+
+    const service = new WebPageMessageService();
+    await flushPromises();
+
+    expect(service['messageElement']?.textContent).toContain('Webblasarnotiser nekades');
+  });
+
+  test('should show UI hint when permission remains default during notification', () => {
+    (window as any).Notification.permission = 'default';
+    (window as any).Notification.requestPermission = jest.fn(
+      () => new Promise<NotificationPermission>(() => {})
+    );
+
+    const service = new WebPageMessageService();
+    service.showMessage('Test');
+
+    expect(service['messageElement']?.textContent).toContain(
+      'Webblasarnotiser ar inte aktiverade an'
+    );
+    expect(service['hasShownNotificationHint']).toBe(true);
   });
 });
