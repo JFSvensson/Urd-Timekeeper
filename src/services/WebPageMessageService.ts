@@ -5,6 +5,7 @@ export class WebPageMessageService implements MessageService {
 
   constructor() {
     this.createMessageElement();
+    this.requestNotificationPermission();
   }
 
   private createMessageElement() {
@@ -22,7 +23,18 @@ export class WebPageMessageService implements MessageService {
     document.body.appendChild(this.messageElement);
   }
 
+  private requestNotificationPermission(): void {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+  }
+
   showMessage(message: string): void {
+    this.showToast(message);
+    this.showBrowserNotification(message);
+  }
+
+  private showToast(message: string): void {
     if (this.messageElement) {
       this.messageElement.textContent = message;
       this.messageElement.style.display = 'block';
@@ -30,7 +42,16 @@ export class WebPageMessageService implements MessageService {
         if (this.messageElement) {
           this.messageElement.style.display = 'none';
         }
-      }, 3000); // Visa meddelandet i 3 sekunder
+      }, 3000);
+    }
+  }
+
+  private showBrowserNotification(message: string): void {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification('Urd Timekeeper', {
+        body: message,
+        icon: '/favicon.svg',
+      });
     }
   }
 }
