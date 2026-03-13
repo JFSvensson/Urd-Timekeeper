@@ -6,6 +6,7 @@ import { AudioService } from '../../services/AudioService';
 import { BrowserStorageService } from '../../services/BrowserStorageService';
 import { WebPageMessageService } from '../../services/WebPageMessageService';
 import { BrowserAudioService } from '../../services/BrowserAudioService';
+import { SessionHistoryService } from '../../services/SessionHistoryService';
 import { UrdUIRenderer } from './UrdUIRenderer';
 import { UrdUIDOMHandler } from './UrdUIDOMHandler';
 import { UrdSettingsManager } from './UrdSettingsManager';
@@ -40,11 +41,13 @@ export class UrdTimer extends HTMLElement {
     }
 
     const settingsManager = new UrdSettingsManager(storageService);
+    const sessionHistory = new SessionHistoryService(storageService);
     this.timerService = new UrdTimerService(
       settingsManager,
       messageService,
       this.overlayMode,
-      audioService
+      audioService,
+      sessionHistory
     );
     const uiRenderer = new UrdUIRenderer(shadow);
     const domHandler = new UrdUIDOMHandler(shadow, this.timerService);
