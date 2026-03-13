@@ -35,9 +35,15 @@ class MockAudioContext {
 
 describe('BrowserAudioService', () => {
   let audioService: BrowserAudioService;
+  const originalAudioContext = (globalThis as { AudioContext?: unknown }).AudioContext;
 
   beforeEach(() => {
+    (globalThis as { AudioContext?: unknown }).AudioContext = MockAudioContext;
     audioService = new BrowserAudioService();
+  });
+
+  afterAll(() => {
+    (globalThis as { AudioContext?: unknown }).AudioContext = originalAudioContext;
   });
 
   describe('playNotification', () => {
@@ -118,6 +124,38 @@ describe('BrowserAudioService', () => {
       audioService.playAmbient();
       // Should be a no-op when muted
       expect(audioService.isMuted()).toBe(true);
+    });
+  });
+
+  describe('audio context fallback', () => {
+    test('should gracefully handle AudioContext constructor errors', () => {
+      class ThrowingAudioContext {
+        constructor() {
+          throw new Error('Audio init blocked');
+        }
+      }
+
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
+      (globalThis as { AudioContext?: unknown }).AudioContext = ThrowingAudioContext;
+      const failingService = new BrowserAudioService();
+
+      expect(() => failingService.playNotification(SessionType.Work)).not.toThrow();
+      expect(() => failingService.playAmbient()).not.toThrow();
+      expect(warnSpy).toHaveBeenCalledTimes(1);
+
+      warnSpy.mockRestore();
+    });
+
+    test('should gracefully handle missing AudioContext', () => {
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
+      (globalThis as { AudioContext?: unknown }).AudioContext = undefined;
+      const noAudioService = new BrowserAudioService();
+
+      expect(() => noAudioService.playNotification(SessionType.Work)).not.toThrow();
+      expect(() => noAudioService.playAmbient()).not.toThrow();
+      expect(warnSpy).toHaveBeenCalledTimes(1);
+
+      warnSpy.mockRestore();
     });
   });
 });
