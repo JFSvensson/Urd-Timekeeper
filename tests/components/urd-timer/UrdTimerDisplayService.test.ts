@@ -6,6 +6,7 @@ describe('UrdTimerDisplayService', () => {
   let timeDisplay: HTMLElement;
   let startStopButton: HTMLElement;
   let sessionInfo: HTMLElement;
+  let sessionStats: HTMLElement;
 
   beforeEach(() => {
     // Create mock DOM elements
@@ -18,12 +19,16 @@ describe('UrdTimerDisplayService', () => {
     sessionInfo = document.createElement('div');
     sessionInfo.id = 'session-info';
 
+    sessionStats = document.createElement('div');
+    sessionStats.id = 'session-stats';
+
     // Create mock shadow root
     mockShadowRoot = {
       querySelector: jest.fn((selector: string) => {
         if (selector === '#time-display') return timeDisplay;
         if (selector === '#start-stop') return startStopButton;
         if (selector === '#session-info') return sessionInfo;
+        if (selector === '#session-stats') return sessionStats;
         return null;
       }),
     } as any;
@@ -104,6 +109,32 @@ describe('UrdTimerDisplayService', () => {
     test('should not crash if session info element is not found', () => {
       mockShadowRoot.querySelector = jest.fn(() => null);
       expect(() => displayService.updateSessionInfo('work', 5)).not.toThrow();
+    });
+  });
+
+  describe('updateStats', () => {
+    test('should render stat cards with correct values', () => {
+      displayService.updateStats({ today: 3, thisWeek: 12, allTime: 50 });
+
+      expect(sessionStats.innerHTML).toContain('3');
+      expect(sessionStats.innerHTML).toContain('12');
+      expect(sessionStats.innerHTML).toContain('50');
+      expect(sessionStats.innerHTML).toContain('Idag');
+      expect(sessionStats.innerHTML).toContain('Denna vecka');
+      expect(sessionStats.innerHTML).toContain('Totalt');
+    });
+
+    test('should render zeros correctly', () => {
+      displayService.updateStats({ today: 0, thisWeek: 0, allTime: 0 });
+
+      const values = sessionStats.querySelectorAll('.stat-value');
+      expect(values).toHaveLength(3);
+      values.forEach((v) => expect(v.textContent).toBe('0'));
+    });
+
+    test('should not crash if stats element is not found', () => {
+      mockShadowRoot.querySelector = jest.fn(() => null);
+      expect(() => displayService.updateStats({ today: 1, thisWeek: 2, allTime: 3 })).not.toThrow();
     });
   });
 });
