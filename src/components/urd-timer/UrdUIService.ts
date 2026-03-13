@@ -27,6 +27,7 @@ export class UrdUIService implements UrdTimerObserver {
   async initialize(): Promise<void> {
     await this.uiRenderer.render();
     this.domHandler.initializeDOMElements();
+    this.domHandler.populateSettings(this.timerService.getSettings());
     this.progressRingService.setupProgressRing();
     this.keyboardService.addKeyboardListener();
     this.update(this.INITIAL_TIME_LEFT, false);
@@ -37,6 +38,7 @@ export class UrdUIService implements UrdTimerObserver {
     this.displayService.updateStartStopButton(isRunning);
     this.updateSessionInfo();
     this.updateProgressRing(timeLeft);
+    this.updateStats();
   }
 
   removeKeyboardListener(): void {
@@ -76,5 +78,12 @@ export class UrdUIService implements UrdTimerObserver {
     }
 
     this.progressRingService.updateProgressRing(timeLeft, totalSeconds);
+  }
+
+  private updateStats(): void {
+    const history = this.timerService.getSessionHistory();
+    if (history) {
+      this.displayService.updateStats(history.getWorkStats());
+    }
   }
 }
