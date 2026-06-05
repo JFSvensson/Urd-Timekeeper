@@ -7,14 +7,17 @@ import { BrowserStorageService } from '../../services/BrowserStorageService';
 import { WebPageMessageService } from '../../services/WebPageMessageService';
 import { BrowserAudioService } from '../../services/BrowserAudioService';
 import { SessionHistoryService } from '../../services/SessionHistoryService';
+import { NoOpMessageService } from '../../services/NoOpMessageService';
 import { UrdUIRenderer } from './UrdUIRenderer';
 import { UrdUIDOMHandler } from './UrdUIDOMHandler';
 import { UrdSettingsManager } from './UrdSettingsManager';
 import { Player } from '../player/Player';
+import { MIN_DURATION_MINUTES, MAX_DURATION_MINUTES } from './UrdConstants';
 
 export class UrdTimer extends HTMLElement {
   private timerService: UrdTimerService;
   private uiService: UrdUIService;
+  private overlayAutostartTimeout: number | null = null;
   private overlayMode: boolean = false;
   private overlayConfig = {
     workDuration: 50,
@@ -37,7 +40,7 @@ export class UrdTimer extends HTMLElement {
     if (this.overlayMode) {
       this.parseOverlayQueryParams();
       // Disable notifications in overlay mode
-      messageService = { showMessage: () => {} } as MessageService;
+      messageService = new NoOpMessageService();
     }
 
     const settingsManager = new UrdSettingsManager(storageService);
@@ -73,7 +76,10 @@ export class UrdTimer extends HTMLElement {
         4 // shortBreaksBeforeLong
       );
       // Auto-start the timer in overlay mode
-      setTimeout(() => this.timerService.start(), 1000);
+      this.overlayAutostartTimeout = window.setTimeout(() => {
+        this.overlayAutostartTimeout = null;
+        this.timerService.start();
+      }, 1000);
     } else {
       this.timerService.loadSettings();
       await this.addEventListeners();
@@ -82,22 +88,43 @@ export class UrdTimer extends HTMLElement {
   }
 
   disconnectedCallback() {
+    if (this.overlayAutostartTimeout) {
+      window.clearTimeout(this.overlayAutostartTimeout);
+      this.overlayAutostartTimeout = null;
+    }
+
+    this.timerService.stop();
     this.uiService.removeKeyboardListener();
+    this.uiService.removeEventListeners();
   }
 
   private parseOverlayQueryParams(): void {
     const params = new URLSearchParams(window.location.search);
 
-    if (params.has('work')) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      this.overlayConfig.workDuration = parseInt(params.get('work')!, 10) || 50;
-    }
-    if (params.has('break')) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      this.overlayConfig.breakDuration = parseInt(params.get('break')!, 10) || 10;
-    }
+    this.overlayConfig.workDuration = this.parseOverlayDuration(
+      params.get('work'),
+      this.overlayConfig.workDuration
+    );
+    this.overlayConfig.breakDuration = this.parseOverlayDuration(
+      params.get('break'),
+      this.overlayConfig.breakDuration
+    );
+
     // Always use center position in overlay mode
     this.overlayConfig.position = 'center';
+  }
+
+  private parseOverlayDuration(value: string | null, fallback: number): number {
+    const parsed = Number.parseInt(value ?? '', 10);
+    if (Number.isNaN(parsed)) {
+      return fallback;
+    }
+
+    if (parsed < MIN_DURATION_MINUTES || parsed > MAX_DURATION_MINUTES) {
+      return fallback;
+    }
+
+    return parsed;
   }
 
   private applyOverlayMode(): void {
