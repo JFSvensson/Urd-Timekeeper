@@ -5,6 +5,12 @@ import {
   DEFAULT_SHORT_BREAK_DURATION,
   DEFAULT_LONG_BREAK_DURATION,
   DEFAULT_SHORT_BREAKS_BEFORE_LONG,
+  MIN_DURATION_MINUTES,
+  MAX_DURATION_MINUTES,
+  MIN_SHORT_BREAKS_BEFORE_LONG,
+  MAX_SHORT_BREAKS_BEFORE_LONG,
+  MIN_VOLUME,
+  MAX_VOLUME,
 } from './UrdConstants';
 
 export interface TimerSettings {
@@ -79,17 +85,21 @@ export class UrdSettingsManager {
 
   private validateDuration(value: unknown, defaultValue: number): number {
     const num = Number(value);
-    return !isNaN(num) && num > 0 && num <= 120 ? num : defaultValue;
+    return !isNaN(num) && num >= MIN_DURATION_MINUTES && num <= MAX_DURATION_MINUTES
+      ? num
+      : defaultValue;
   }
 
   private validateCount(value: unknown, defaultValue: number): number {
     const num = Number(value);
-    return !isNaN(num) && num > 0 && num <= 10 ? num : defaultValue;
+    return !isNaN(num) && num >= MIN_SHORT_BREAKS_BEFORE_LONG && num <= MAX_SHORT_BREAKS_BEFORE_LONG
+      ? num
+      : defaultValue;
   }
 
   private validateVolume(value: unknown, defaultValue: number): number {
     const num = Number(value);
-    return !isNaN(num) && num >= 0 && num <= 1 ? num : defaultValue;
+    return !isNaN(num) && num >= MIN_VOLUME && num <= MAX_VOLUME ? num : defaultValue;
   }
 
   getSettingsInSeconds(settings: TimerSettings) {
