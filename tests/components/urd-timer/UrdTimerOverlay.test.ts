@@ -19,6 +19,7 @@ jest.mock('../../../src/components/urd-timer/UrdUIService', () => {
         addButtonListeners: jest.fn(),
         addSettingsEventListeners: jest.fn(),
         removeKeyboardListener: jest.fn(),
+        removeEventListeners: jest.fn(),
       })),
   };
 });
@@ -56,11 +57,6 @@ describe('UrdTimer - Overlay Mode', () => {
 
   afterEach(() => {
     jest.useRealTimers();
-    // Reset URL query parameters
-    Object.defineProperty(window, 'location', {
-      value: { search: '', href: '', origin: '', pathname: '/' },
-      writable: true,
-    });
   });
 
   describe('query parameter parsing', () => {
