@@ -1,5 +1,13 @@
 import { UrdTimerService } from './UrdTimerService';
 import { TimerSettings } from './UrdSettingsManager';
+import {
+  MIN_DURATION_MINUTES,
+  MAX_DURATION_MINUTES,
+  MIN_SHORT_BREAKS_BEFORE_LONG,
+  MAX_SHORT_BREAKS_BEFORE_LONG,
+  MIN_VOLUME_PERCENT,
+  MAX_VOLUME_PERCENT,
+} from './UrdConstants';
 
 export class UrdUIDOMHandler {
   private inputElements = {
@@ -11,6 +19,11 @@ export class UrdUIDOMHandler {
     volumeSetting: null as HTMLInputElement | null,
   };
   private saveSettingsButton: HTMLButtonElement | null = null;
+  private startStopButton: HTMLElement | null = null;
+  private resetButton: HTMLElement | null = null;
+  private onSaveSettingsClick: (() => void) | null = null;
+  private onToggleClick: (() => void) | null = null;
+  private onResetClick: (() => void) | null = null;
 
   constructor(
     private shadowRoot: ShadowRoot,
@@ -51,7 +64,13 @@ export class UrdUIDOMHandler {
   }
 
   addSettingsEventListeners(): void {
-    this.saveSettingsButton?.addEventListener('click', () => {
+    if (!this.saveSettingsButton) return;
+
+    if (this.onSaveSettingsClick) {
+      this.saveSettingsButton.removeEventListener('click', this.onSaveSettingsClick);
+    }
+
+    this.onSaveSettingsClick = () => {
       const settings = this.getUpdatedSettings();
       this.timerService.updateSettings(
         settings.workDuration,
@@ -61,41 +80,109 @@ export class UrdUIDOMHandler {
         settings.soundEnabled,
         settings.volume
       );
-    });
+    };
+
+    this.saveSettingsButton.addEventListener('click', this.onSaveSettingsClick);
   }
 
   addButtonListeners(toggleCallback: () => void, resetCallback: () => void): void {
-    const startStopButton = this.shadowRoot.querySelector('#start-stop');
-    const resetButton = this.shadowRoot.querySelector('#reset');
+    this.removeButtonListeners();
 
-    if (startStopButton && resetButton) {
-      startStopButton.addEventListener('click', toggleCallback);
-      resetButton.addEventListener('click', resetCallback);
+    this.startStopButton = this.shadowRoot.querySelector('#start-stop');
+    this.resetButton = this.shadowRoot.querySelector('#reset');
+
+    if (this.startStopButton && this.resetButton) {
+      this.onToggleClick = toggleCallback;
+      this.onResetClick = resetCallback;
+
+      this.startStopButton.addEventListener('click', this.onToggleClick);
+      this.resetButton.addEventListener('click', this.onResetClick);
     } else {
       console.error('Buttons not found in the shadow DOM');
     }
   }
 
+  removeEventListeners(): void {
+    if (this.saveSettingsButton && this.onSaveSettingsClick) {
+      this.saveSettingsButton.removeEventListener('click', this.onSaveSettingsClick);
+    }
+    this.onSaveSettingsClick = null;
+    this.removeButtonListeners();
+  }
+
   private getUpdatedSettings() {
+    const current = this.timerService.getSettings();
+
     return {
-      workDuration: this.inputElements.workDuration
-        ? parseInt(this.inputElements.workDuration.value, 10) || 25
-        : 25,
-      shortBreakDuration: this.inputElements.shortBreakDuration
-        ? parseInt(this.inputElements.shortBreakDuration.value, 10) || 5
-        : 5,
-      longBreakDuration: this.inputElements.longBreakDuration
-        ? parseInt(this.inputElements.longBreakDuration.value, 10) || 15
-        : 15,
+      workDuration: this.parseBoundedInt(
+        this.inputElements.workDuration?.value,
+        current.workDuration,
+        MIN_DURATION_MINUTES,
+        MAX_DURATION_MINUTES
+      ),
+      shortBreakDuration: this.parseBoundedInt(
+        this.inputElements.shortBreakDuration?.value,
+        current.shortBreakDuration,
+        MIN_DURATION_MINUTES,
+        MAX_DURATION_MINUTES
+      ),
+      longBreakDuration: this.parseBoundedInt(
+        this.inputElements.longBreakDuration?.value,
+        current.longBreakDuration,
+        MIN_DURATION_MINUTES,
+        MAX_DURATION_MINUTES
+      ),
       shortBreaksBeforeLong: this.inputElements.shortBreaksBeforeLong
-        ? parseInt(this.inputElements.shortBreaksBeforeLong.value, 10) || 4
-        : 4,
+        ? this.parseBoundedInt(
+            this.inputElements.shortBreaksBeforeLong.value,
+            current.shortBreaksBeforeLong,
+            MIN_SHORT_BREAKS_BEFORE_LONG,
+            MAX_SHORT_BREAKS_BEFORE_LONG
+          )
+        : current.shortBreaksBeforeLong,
       soundEnabled: this.inputElements.soundEnabled
         ? this.inputElements.soundEnabled.checked
-        : true,
+        : current.soundEnabled,
       volume: this.inputElements.volumeSetting
-        ? parseInt(this.inputElements.volumeSetting.value, 10) / 100
-        : 0.5,
+        ? this.parseBoundedInt(
+            this.inputElements.volumeSetting.value,
+            Math.round(current.volume * MAX_VOLUME_PERCENT),
+            MIN_VOLUME_PERCENT,
+            MAX_VOLUME_PERCENT
+          ) / MAX_VOLUME_PERCENT
+        : current.volume,
     };
+  }
+
+  private parseBoundedInt(
+    value: string | undefined,
+    fallback: number,
+    min: number,
+    max: number
+  ): number {
+    const parsed = Number.parseInt(value ?? '', 10);
+    if (Number.isNaN(parsed)) {
+      return fallback;
+    }
+
+    if (parsed < min || parsed > max) {
+      return fallback;
+    }
+
+    return parsed;
+  }
+
+  private removeButtonListeners(): void {
+    if (this.startStopButton && this.onToggleClick) {
+      this.startStopButton.removeEventListener('click', this.onToggleClick);
+    }
+    if (this.resetButton && this.onResetClick) {
+      this.resetButton.removeEventListener('click', this.onResetClick);
+    }
+
+    this.startStopButton = null;
+    this.resetButton = null;
+    this.onToggleClick = null;
+    this.onResetClick = null;
   }
 }
