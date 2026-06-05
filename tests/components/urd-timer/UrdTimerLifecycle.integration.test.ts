@@ -48,6 +48,7 @@ describe('UrdTimer lifecycle integration', () => {
 
   afterEach(() => {
     consoleErrorSpy.mockRestore();
+    jest.useRealTimers();
   });
 
   it('does not accumulate keyboard listeners across reconnect cycles', async () => {
@@ -75,5 +76,31 @@ describe('UrdTimer lifecycle integration', () => {
     expect(toggleSpy).not.toHaveBeenCalled();
 
     toggleSpy.mockRestore();
+  });
+
+  it('stops active countdown when component disconnects', async () => {
+    jest.useFakeTimers();
+
+    const timer = new UrdTimer(
+      new MockStorageService(),
+      new MockMessageService(),
+      new MockAudioService()
+    );
+
+    await timer.connectedCallback();
+
+    // Start timer through the same keyboard pathway users trigger.
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: ' ' }));
+    jest.advanceTimersByTime(3000);
+
+    const timerService = (timer as any).timerService as UrdTimerService;
+    const beforeDisconnect = timerService.getTimeLeft();
+    expect(timerService.getIsRunning()).toBe(true);
+
+    timer.disconnectedCallback();
+
+    expect(timerService.getIsRunning()).toBe(false);
+    jest.advanceTimersByTime(5000);
+    expect(timerService.getTimeLeft()).toBe(beforeDisconnect);
   });
 });
