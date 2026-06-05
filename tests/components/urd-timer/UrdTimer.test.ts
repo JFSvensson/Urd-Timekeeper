@@ -19,6 +19,7 @@ jest.mock('../../../src/components/urd-timer/UrdUIService', () => {
         addButtonListeners: jest.fn(),
         addSettingsEventListeners: jest.fn(),
         removeKeyboardListener: jest.fn(),
+        removeEventListeners: jest.fn(),
       })),
   };
 });
@@ -71,5 +72,13 @@ describe('UrdTimer', () => {
   test('should add event listeners on connectedCallback', async () => {
     await timer.connectedCallback();
     expect(mockUIService.addButtonListeners).toHaveBeenCalled();
+  });
+
+  test('should stop timer and remove listeners on disconnectedCallback', () => {
+    timer.disconnectedCallback();
+
+    expect(mockTimerService.stop).toHaveBeenCalled();
+    expect(mockUIService.removeKeyboardListener).toHaveBeenCalled();
+    expect(mockUIService.removeEventListeners).toHaveBeenCalled();
   });
 });
