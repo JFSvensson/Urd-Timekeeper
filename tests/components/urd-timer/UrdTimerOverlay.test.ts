@@ -68,4 +68,38 @@ describe('UrdTimer - Overlay Mode', () => {
       expect(UrdTimerService).toHaveBeenCalled();
     });
   });
+
+  describe('overlay lifecycle', () => {
+    it('starts automatically after delay in overlay mode', async () => {
+      const hasAttributeSpy = jest
+        .spyOn(UrdTimer.prototype, 'hasAttribute')
+        .mockImplementation((name: string) => name === 'overlay-mode');
+
+      const timer = new UrdTimer(mockStorageService, mockMessageService);
+      await timer.connectedCallback();
+
+      expect(mockTimerService.start).not.toHaveBeenCalled();
+      jest.advanceTimersByTime(1000);
+      expect(mockTimerService.start).toHaveBeenCalledTimes(1);
+
+      hasAttributeSpy.mockRestore();
+    });
+
+    it('clears pending autostart timeout when disconnected', async () => {
+      const hasAttributeSpy = jest
+        .spyOn(UrdTimer.prototype, 'hasAttribute')
+        .mockImplementation((name: string) => name === 'overlay-mode');
+
+      const timer = new UrdTimer(mockStorageService, mockMessageService);
+      await timer.connectedCallback();
+
+      const startCallCountBeforeDisconnect = mockTimerService.start.mock.calls.length;
+      timer.disconnectedCallback();
+
+      jest.advanceTimersByTime(1000);
+      expect(mockTimerService.start).toHaveBeenCalledTimes(startCallCountBeforeDisconnect);
+
+      hasAttributeSpy.mockRestore();
+    });
+  });
 });
