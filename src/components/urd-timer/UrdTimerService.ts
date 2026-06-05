@@ -8,6 +8,7 @@ import { SECONDS_PER_MINUTE } from './UrdConstants';
 
 export class UrdTimerService {
   private timer: number | null = null;
+  private overlayRestartTimeout: number | null = null;
   private expectedTime: number = 0;
   private timeLeft: number;
   private isRunning: boolean = false;
@@ -112,6 +113,10 @@ export class UrdTimerService {
     this.notifyObservers();
   }
 
+  stop() {
+    this.pause();
+  }
+
   toggle() {
     if (this.isRunning) {
       this.pause();
@@ -149,6 +154,10 @@ export class UrdTimerService {
     if (this.timer) {
       window.clearTimeout(this.timer);
       this.timer = null;
+    }
+    if (this.overlayRestartTimeout) {
+      window.clearTimeout(this.overlayRestartTimeout);
+      this.overlayRestartTimeout = null;
     }
     this.isRunning = false;
   }
@@ -188,7 +197,11 @@ export class UrdTimerService {
 
     // Auto-start next session in overlay mode after 5 seconds
     if (this.overlayMode) {
-      setTimeout(() => {
+      if (this.overlayRestartTimeout) {
+        window.clearTimeout(this.overlayRestartTimeout);
+      }
+      this.overlayRestartTimeout = window.setTimeout(() => {
+        this.overlayRestartTimeout = null;
         this.start();
       }, 5000);
     }
