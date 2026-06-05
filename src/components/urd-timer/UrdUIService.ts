@@ -45,6 +45,10 @@ export class UrdUIService implements UrdTimerObserver {
     this.keyboardService.removeKeyboardListener();
   }
 
+  removeEventListeners(): void {
+    this.domHandler.removeEventListeners();
+  }
+
   addButtonListeners(toggleCallback: () => void, resetCallback: () => void): void {
     this.domHandler.addButtonListeners(toggleCallback, resetCallback);
   }
