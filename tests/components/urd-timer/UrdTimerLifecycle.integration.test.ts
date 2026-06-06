@@ -4,6 +4,7 @@ import { StorageService } from '../../../src/services/StorageService';
 import { MessageService } from '../../../src/services/MessageService';
 import { AudioService } from '../../../src/services/AudioService';
 import { SessionType } from '../../../src/components/urd-timer/UrdSessionType';
+import { setupCssStyleSheetReplaceMock, suppressConsoleError } from '../../helpers/domTestUtils';
 
 class MockStorageService implements StorageService {
   private store = new Map<string, string>();
@@ -37,24 +38,17 @@ class MockAudioService implements AudioService {
 }
 
 describe('UrdTimer lifecycle integration', () => {
-  let consoleErrorSpy: jest.SpyInstance;
-  let originalReplace: unknown;
+  let restoreCssStyleSheetReplace: () => void;
+  let restoreConsoleError: () => void;
 
   beforeEach(() => {
-    originalReplace = (CSSStyleSheet.prototype as any).replace;
-    (CSSStyleSheet.prototype as any).replace = jest
-      .fn()
-      .mockResolvedValue(undefined as unknown as CSSStyleSheet);
-    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    restoreCssStyleSheetReplace = setupCssStyleSheetReplaceMock();
+    restoreConsoleError = suppressConsoleError();
   });
 
   afterEach(() => {
-    if (typeof originalReplace === 'undefined') {
-      delete (CSSStyleSheet.prototype as any).replace;
-    } else {
-      (CSSStyleSheet.prototype as any).replace = originalReplace;
-    }
-    consoleErrorSpy.mockRestore();
+    restoreCssStyleSheetReplace();
+    restoreConsoleError();
     jest.useRealTimers();
   });
 
