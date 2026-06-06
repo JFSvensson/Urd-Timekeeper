@@ -1,7 +1,5 @@
 export function setupCssStyleSheetReplaceMock(): () => void {
-  const stylesheetPrototype = CSSStyleSheet.prototype as CSSStyleSheet & {
-    replace?: (text: string) => Promise<CSSStyleSheet>;
-  };
+  const stylesheetPrototype = CSSStyleSheet.prototype as unknown as Record<string, unknown>;
   const originalReplace = stylesheetPrototype.replace;
 
   stylesheetPrototype.replace = jest
@@ -10,7 +8,7 @@ export function setupCssStyleSheetReplaceMock(): () => void {
 
   return () => {
     if (typeof originalReplace === 'undefined') {
-      delete stylesheetPrototype.replace;
+      Reflect.deleteProperty(stylesheetPrototype, 'replace');
       return;
     }
 
