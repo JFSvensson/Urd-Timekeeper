@@ -1,14 +1,13 @@
 import { UrdUIRenderer } from '../../../src/components/urd-timer/UrdUIRenderer';
+import { setupCssStyleSheetReplaceMock, suppressConsoleError } from '../../helpers/domTestUtils';
 
 describe('UrdUIRenderer', () => {
   let shadowRoot: ShadowRoot;
   let renderer: UrdUIRenderer;
+  let restoreCssStyleSheetReplace: () => void;
 
   beforeEach(() => {
-    // Mock CSSStyleSheet.replace for jsdom compatibility
-    if (typeof CSSStyleSheet.prototype.replace === 'undefined') {
-      CSSStyleSheet.prototype.replace = jest.fn().mockResolvedValue(undefined);
-    }
+    restoreCssStyleSheetReplace = setupCssStyleSheetReplaceMock();
 
     // Create a container element
     const container = document.createElement('div');
@@ -22,6 +21,7 @@ describe('UrdUIRenderer', () => {
   });
 
   afterEach(() => {
+    restoreCssStyleSheetReplace();
     document.body.innerHTML = '';
   });
 
@@ -59,7 +59,8 @@ describe('UrdUIRenderer', () => {
     });
 
     it('should handle rendering errors gracefully', async () => {
-      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+      const restoreConsoleError = suppressConsoleError();
+      const consoleErrorSpy = jest.spyOn(console, 'error');
 
       // Force an error by providing invalid shadowRoot
       const invalidRenderer = new UrdUIRenderer(null as any);
@@ -68,7 +69,7 @@ describe('UrdUIRenderer', () => {
 
       expect(consoleErrorSpy).toHaveBeenCalledWith('Error rendering UI:', expect.any(Error));
 
-      consoleErrorSpy.mockRestore();
+      restoreConsoleError();
     });
   });
 
