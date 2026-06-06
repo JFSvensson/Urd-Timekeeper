@@ -38,15 +38,22 @@ class MockAudioService implements AudioService {
 
 describe('UrdTimer lifecycle integration', () => {
   let consoleErrorSpy: jest.SpyInstance;
+  let originalReplace: unknown;
 
   beforeEach(() => {
-    if (typeof CSSStyleSheet.prototype.replace === 'undefined') {
-      CSSStyleSheet.prototype.replace = jest.fn().mockResolvedValue(undefined);
-    }
+    originalReplace = (CSSStyleSheet.prototype as any).replace;
+    (CSSStyleSheet.prototype as any).replace = jest
+      .fn()
+      .mockResolvedValue(undefined as unknown as CSSStyleSheet);
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   afterEach(() => {
+    if (typeof originalReplace === 'undefined') {
+      delete (CSSStyleSheet.prototype as any).replace;
+    } else {
+      (CSSStyleSheet.prototype as any).replace = originalReplace;
+    }
     consoleErrorSpy.mockRestore();
     jest.useRealTimers();
   });
