@@ -1,3 +1,5 @@
+/// <reference types="jest" />
+import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { UrdTimer } from '../../../src/components/urd-timer/UrdTimer';
 import { UrdTimerService } from '../../../src/components/urd-timer/UrdTimerService';
 import { UrdUIService } from '../../../src/components/urd-timer/UrdUIService';
@@ -14,13 +16,20 @@ jest.mock('../../../src/components/urd-timer/UrdUIService', () => {
   return {
     UrdUIService: jest
       .fn()
-      .mockImplementation((_shadowRoot, _timerService, _uiRenderer, _domHandler) => ({
-        initialize: jest.fn().mockResolvedValue(undefined),
-        addButtonListeners: jest.fn(),
-        addSettingsEventListeners: jest.fn(),
-        removeKeyboardListener: jest.fn(),
-        removeEventListeners: jest.fn(),
-      })),
+      .mockImplementation(
+        (
+          _shadowRoot: unknown,
+          _timerService: unknown,
+          _uiRenderer: unknown,
+          _domHandler: unknown
+        ) => ({
+          initialize: jest.fn().mockResolvedValue(undefined),
+          addButtonListeners: jest.fn(),
+          addSettingsEventListeners: jest.fn(),
+          removeKeyboardListener: jest.fn(),
+          removeEventListeners: jest.fn(),
+        })
+      ),
   };
 });
 
