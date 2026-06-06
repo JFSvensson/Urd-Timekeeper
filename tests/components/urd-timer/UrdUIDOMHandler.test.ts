@@ -1,3 +1,4 @@
+/// <reference types="jest" />
 import { UrdUIDOMHandler } from '../../../src/components/urd-timer/UrdUIDOMHandler';
 import { UrdTimerService } from '../../../src/components/urd-timer/UrdTimerService';
 import { UrdSettingsManager } from '../../../src/components/urd-timer/UrdSettingsManager';

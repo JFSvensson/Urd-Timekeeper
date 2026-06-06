@@ -1,3 +1,4 @@
+/// <reference types="jest" />
 import { BrowserAudioService } from '../../src/services/BrowserAudioService';
 import { SessionType } from '../../src/components/urd-timer/UrdSessionType';
 

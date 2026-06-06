@@ -1,3 +1,4 @@
+/// <reference types="jest" />
 import { BrowserStorageService } from '../../src/services/BrowserStorageService';
 
 describe('BrowserStorageService', () => {

@@ -1,3 +1,4 @@
+/// <reference types="jest" />
 import { WebPageMessageService } from '../../src/services/WebPageMessageService';
 
 const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0));

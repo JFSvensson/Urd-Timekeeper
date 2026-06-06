@@ -1,3 +1,4 @@
+/// <reference types="jest" />
 import { SessionHistoryService } from '../../src/services/SessionHistoryService';
 import { MockStorageService } from '../mocks/serviceMocks';
 

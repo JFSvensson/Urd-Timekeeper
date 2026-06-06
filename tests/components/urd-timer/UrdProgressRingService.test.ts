@@ -1,3 +1,4 @@
+/// <reference types="jest" />
 import { UrdProgressRingService } from '../../../src/components/urd-timer/UrdProgressRingService';
 
 describe('UrdProgressRingService', () => {

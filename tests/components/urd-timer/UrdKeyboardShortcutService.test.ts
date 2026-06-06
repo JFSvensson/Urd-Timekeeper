@@ -1,3 +1,4 @@
+/// <reference types="jest" />
 import { UrdKeyboardShortcutService } from '../../../src/components/urd-timer/UrdKeyboardShortcutService';
 import { UrdTimerService } from '../../../src/components/urd-timer/UrdTimerService';
 

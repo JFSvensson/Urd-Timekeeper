@@ -1,3 +1,4 @@
+/// <reference types="jest" />
 import { UrdUIRenderer } from '../../../src/components/urd-timer/UrdUIRenderer';
 import { setupCssStyleSheetReplaceMock, suppressConsoleError } from '../../helpers/domTestUtils';
 

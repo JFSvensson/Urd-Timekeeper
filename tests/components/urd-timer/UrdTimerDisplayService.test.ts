@@ -1,3 +1,4 @@
+/// <reference types="jest" />
 import { UrdTimerDisplayService } from '../../../src/components/urd-timer/UrdTimerDisplayService';
 
 describe('UrdTimerDisplayService', () => {

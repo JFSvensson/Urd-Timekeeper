@@ -1,3 +1,4 @@
+/// <reference types="jest" />
 import { UrdTimerService } from '../../../src/components/urd-timer/UrdTimerService';
 import { SessionType } from '../../../src/components/urd-timer/UrdSessionType';
 import { StorageService } from '../../../src/services/StorageService';

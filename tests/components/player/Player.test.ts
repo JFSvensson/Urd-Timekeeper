@@ -1,3 +1,4 @@
+/// <reference types="jest" />
 import { Player } from '../../../src/components/player/Player';
 import { AudioService } from '../../../src/services/AudioService';
 import { SessionType } from '../../../src/components/urd-timer/UrdSessionType';
