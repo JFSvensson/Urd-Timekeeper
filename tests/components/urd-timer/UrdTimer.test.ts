@@ -1,3 +1,5 @@
+/// <reference types="jest" />
+import { beforeEach, describe, expect, jest } from '@jest/globals';
 import { UrdTimer } from '../../../src/components/urd-timer/UrdTimer';
 import { UrdTimerService } from '../../../src/components/urd-timer/UrdTimerService';
 import { UrdUIService } from '../../../src/components/urd-timer/UrdUIService';
