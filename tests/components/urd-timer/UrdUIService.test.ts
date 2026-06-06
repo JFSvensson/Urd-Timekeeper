@@ -8,6 +8,7 @@ import {
   DEFAULT_WORK_DURATION,
 } from '../../../src/components/urd-timer/UrdConstants';
 import { MockStorageService, MockMessageService } from '../../mocks/serviceMocks';
+import { setupCssStyleSheetReplaceMock } from '../../helpers/domTestUtils';
 
 describe('UrdUIService', () => {
   let shadowRoot: ShadowRoot;
@@ -15,12 +16,10 @@ describe('UrdUIService', () => {
   let uiService: UrdUIService;
   let mockRenderer: jest.Mocked<UrdUIRenderer>;
   let mockDomHandler: jest.Mocked<UrdUIDOMHandler>;
+  let restoreCssStyleSheetReplace: () => void;
 
   beforeEach(() => {
-    // Mock CSSStyleSheet.replace for jsdom compatibility
-    if (typeof CSSStyleSheet.prototype.replace === 'undefined') {
-      CSSStyleSheet.prototype.replace = jest.fn().mockResolvedValue(undefined);
-    }
+    restoreCssStyleSheetReplace = setupCssStyleSheetReplaceMock();
 
     const container = document.createElement('div');
     document.body.appendChild(container);
@@ -72,6 +71,7 @@ describe('UrdUIService', () => {
   });
 
   afterEach(() => {
+    restoreCssStyleSheetReplace();
     uiService.removeKeyboardListener();
     document.body.innerHTML = '';
   });
