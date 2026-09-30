@@ -4,14 +4,14 @@ import { resolve } from 'path';
 export default defineConfig({
   root: 'src',
   base: './',
-  publicDir: resolve(__dirname, 'public'),
+  publicDir: resolve(import.meta.dirname, 'public'),
   build: {
     outDir: '../dist',
     emptyOutDir: true,
     rollupOptions: {
       input: {
-        main: resolve(__dirname, 'src/index.html'),
-        overlay: resolve(__dirname, 'src/overlay.html'),
+        main: resolve(import.meta.dirname, 'src/index.html'),
+        overlay: resolve(import.meta.dirname, 'src/overlay.html'),
       },
     },
   },
