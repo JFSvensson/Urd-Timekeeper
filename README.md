@@ -16,6 +16,7 @@ Urd Timekeeper is a Pomodoro timer web application that helps you manage your ti
 - ✅ Dark mode support, ARIA improvements, and responsive layout
 - ✅ Overlay mode for video production workflows
 - ✅ Installable PWA with manifest, favicon, and offline app shell
+- ✅ JSON export and import for settings and session history
 
 ## Installation
 

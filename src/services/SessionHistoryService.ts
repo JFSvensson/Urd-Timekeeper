@@ -48,6 +48,34 @@ export class SessionHistoryService {
       .reduce((sum, s) => sum + s.durationMinutes, 0);
   }
 
+  getHistory(): SessionRecord[] {
+    return this.loadHistory();
+  }
+
+  replaceHistory(history: unknown): boolean {
+    if (!SessionHistoryService.isValidHistory(history)) return false;
+    this.saveHistory(history);
+    return true;
+  }
+
+  private static isValidHistory(history: unknown): history is SessionRecord[] {
+    return (
+      Array.isArray(history) &&
+      history.every((session) => {
+        if (!session || typeof session !== 'object') return false;
+        const record = session as Partial<SessionRecord>;
+        return (
+          (record.type === 'work' || record.type === 'shortBreak' || record.type === 'longBreak') &&
+          typeof record.durationMinutes === 'number' &&
+          Number.isFinite(record.durationMinutes) &&
+          record.durationMinutes > 0 &&
+          typeof record.completedAt === 'string' &&
+          !Number.isNaN(Date.parse(record.completedAt))
+        );
+      })
+    );
+  }
+
   private loadHistory(): SessionRecord[] {
     try {
       const data = this.storageService.getItem(SessionHistoryService.STORAGE_KEY);

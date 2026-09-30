@@ -60,7 +60,7 @@ export class UrdSettingsManager {
     }
   }
 
-  private validateSettings(settings: Partial<TimerSettings>): TimerSettings {
+  validateSettings(settings: Partial<TimerSettings>): TimerSettings {
     const defaults = this.getDefaults();
 
     return {
@@ -81,6 +81,14 @@ export class UrdSettingsManager {
         typeof settings.soundEnabled === 'boolean' ? settings.soundEnabled : defaults.soundEnabled,
       volume: this.validateVolume(settings.volume, defaults.volume),
     };
+  }
+
+  isValidSettings(settings: unknown): settings is TimerSettings {
+    if (!settings || typeof settings !== 'object') return false;
+
+    const candidate = settings as Partial<TimerSettings>;
+    const validated = this.validateSettings(candidate);
+    return JSON.stringify(validated) === JSON.stringify(settings);
   }
 
   private validateDuration(value: unknown, defaultValue: number): number {

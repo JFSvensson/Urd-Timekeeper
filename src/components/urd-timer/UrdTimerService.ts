@@ -3,6 +3,7 @@ import { SessionType } from './UrdSessionType';
 import { MessageService } from '../../services/MessageService';
 import { AudioService } from '../../services/AudioService';
 import { SessionHistoryService } from '../../services/SessionHistoryService';
+import { DataPortabilityService, TimerBackup } from '../../services/DataPortabilityService';
 import { UrdSettingsManager } from './UrdSettingsManager';
 import { SECONDS_PER_MINUTE } from './UrdConstants';
 
@@ -29,6 +30,7 @@ export class UrdTimerService {
   private currentSession: SessionType = SessionType.Work;
   private completedSessions: number = 0;
   private overlayMode: boolean = false;
+  private dataPortabilityService: DataPortabilityService | null = null;
 
   constructor(
     private settingsManager: UrdSettingsManager,
@@ -55,6 +57,13 @@ export class UrdTimerService {
     if (this.audioService) {
       this.audioService.setVolume(settings.volume);
       this.audioService.setMuted(!settings.soundEnabled);
+    }
+
+    if (this.sessionHistory) {
+      this.dataPortabilityService = new DataPortabilityService(
+        this.settingsManager,
+        this.sessionHistory
+      );
     }
   }
 
@@ -287,6 +296,16 @@ export class UrdTimerService {
 
   getSettings() {
     return this.settingsManager.loadSettings();
+  }
+
+  exportBackup(): TimerBackup | null {
+    return this.dataPortabilityService?.exportBackup() ?? null;
+  }
+
+  importBackup(data: unknown): boolean {
+    if (!this.dataPortabilityService?.importBackup(data)) return false;
+    this.loadSettings();
+    return true;
   }
 
   getState() {

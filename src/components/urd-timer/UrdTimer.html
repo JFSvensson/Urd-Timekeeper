@@ -58,6 +58,12 @@
     </fieldset>
     
     <button id="save-settings">Spara inställningar</button>
+    <div class="data-portability" aria-label="Dataportabilitet">
+      <button type="button" id="export-data">Exportera data</button>
+      <button type="button" id="import-data">Importera data</button>
+      <input type="file" id="import-data-file" accept="application/json,.json" hidden>
+      <p id="settings-status" role="status" aria-live="polite"></p>
+    </div>
   </fieldset>
 
   <div id="session-stats" class="session-stats" role="status" aria-label="Sessionsstatistik"></div>

@@ -80,6 +80,6 @@ npm run test:e2e
 ### Candidate Epics
 
 - [ ] i18n foundation
-- [ ] Export/import session history
+- [x] Export/import settings and session history
 - [ ] Visual regression tests
 - [ ] Additional UX polish and optional feature expansion
