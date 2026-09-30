@@ -12,6 +12,7 @@ import {
   DEFAULT_LONG_BREAK_DURATION,
   DEFAULT_SHORT_BREAKS_BEFORE_LONG,
 } from '../../../src/components/urd-timer/UrdConstants';
+import { suppressConsoleError } from '../../helpers/domTestUtils';
 
 class MockStorageService implements StorageService {
   private store: { [key: string]: string } = {};
@@ -34,8 +35,8 @@ class MockStorageService implements StorageService {
 }
 
 class MockMessageService implements MessageService {
-  showMessage(message: string): void {
-    console.log('Mock message:', message);
+  showMessage(_message: string): void {
+    // Intentionally no-op in tests to avoid noisy console output.
   }
 }
 
@@ -129,11 +130,16 @@ describe('UrdTimerService', () => {
   });
 
   test('should handle malformed JSON in localStorage gracefully', () => {
-    mockStorageService.setItem('urdTimerSettings', '{invalid json}');
+    const restoreConsoleError = suppressConsoleError();
+    try {
+      mockStorageService.setItem('urdTimerSettings', '{invalid json}');
 
-    expect(() => timerService.loadSettings()).not.toThrow();
-    const config = timerService.getConfig();
-    expect(config.workDuration).toBe(DEFAULT_WORK_DURATION);
+      expect(() => timerService.loadSettings()).not.toThrow();
+      const config = timerService.getConfig();
+      expect(config.workDuration).toBe(DEFAULT_WORK_DURATION);
+    } finally {
+      restoreConsoleError();
+    }
   });
 
   test('should toggle between running and paused states', () => {
@@ -155,6 +161,65 @@ describe('UrdTimerService', () => {
     jest.advanceTimersByTime(3000);
 
     expect(timerService.getTimeLeft()).toBe(initialTime - 3);
+
+    jest.useRealTimers();
+  });
+
+  test('should calculate elapsed time from the deadline after a delayed callback', () => {
+    jest.useFakeTimers();
+    const initialTime = timerService.getTimeLeft();
+    timerService.start();
+    jest.clearAllTimers();
+    jest.advanceTimersByTime(5000);
+
+    (timerService as unknown as { tick: () => void }).tick();
+
+    expect(timerService.getTimeLeft()).toBe(initialTime - 5);
+    jest.useRealTimers();
+  });
+
+  test('should use injected clock and scheduler implementations', () => {
+    let currentTime = 1000;
+    const scheduled = { callback: null as (() => void) | null };
+    const scheduler = {
+      setTimeout: jest.fn((callback: () => void) => {
+        scheduled.callback = callback;
+        return 1;
+      }),
+      clearTimeout: jest.fn(),
+    };
+    const injectedTimerService = new UrdTimerService(
+      settingsManager,
+      mockMessageService,
+      false,
+      null,
+      null,
+      { now: () => currentTime },
+      scheduler
+    );
+
+    injectedTimerService.start();
+    currentTime += 5000;
+    expect(scheduled.callback).not.toBeNull();
+    scheduled.callback?.();
+
+    expect(injectedTimerService.getTimeLeft()).toBe(DEFAULT_WORK_DURATION * SECONDS_PER_MINUTE - 5);
+    expect(scheduler.setTimeout).toHaveBeenCalled();
+  });
+
+  test('should pause overlay sessions before the delayed restart', () => {
+    jest.useFakeTimers();
+    const overlayTimerService = new UrdTimerService(settingsManager, mockMessageService, true);
+    overlayTimerService.updateSettings(1, 1, 1, 1);
+    overlayTimerService.start();
+
+    jest.advanceTimersByTime(60 * 1000);
+
+    expect(overlayTimerService.getIsRunning()).toBe(false);
+    jest.advanceTimersByTime(4999);
+    expect(overlayTimerService.getIsRunning()).toBe(false);
+    jest.advanceTimersByTime(1);
+    expect(overlayTimerService.getIsRunning()).toBe(true);
 
     jest.useRealTimers();
   });

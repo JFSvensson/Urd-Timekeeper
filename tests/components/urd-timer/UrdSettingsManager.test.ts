@@ -11,6 +11,7 @@ import {
   DEFAULT_SHORT_BREAKS_BEFORE_LONG,
   SECONDS_PER_MINUTE,
 } from '../../../src/components/urd-timer/UrdConstants';
+import { suppressConsoleError } from '../../helpers/domTestUtils';
 
 class MockStorageService implements StorageService {
   private store: { [key: string]: string } = {};
@@ -86,11 +87,16 @@ describe('UrdSettingsManager', () => {
     });
 
     test('should return defaults when JSON parsing fails', () => {
-      mockStorageService.setItem('urdTimerSettings', '{invalid json}');
+      const restoreConsoleError = suppressConsoleError();
+      try {
+        mockStorageService.setItem('urdTimerSettings', '{invalid json}');
 
-      const settings = settingsManager.loadSettings();
+        const settings = settingsManager.loadSettings();
 
-      expect(settings.workDuration).toBe(DEFAULT_WORK_DURATION);
+        expect(settings.workDuration).toBe(DEFAULT_WORK_DURATION);
+      } finally {
+        restoreConsoleError();
+      }
     });
 
     test('should validate and correct invalid duration values', () => {

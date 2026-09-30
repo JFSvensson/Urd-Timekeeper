@@ -6,10 +6,19 @@ import { SessionHistoryService } from '../../services/SessionHistoryService';
 import { UrdSettingsManager } from './UrdSettingsManager';
 import { SECONDS_PER_MINUTE } from './UrdConstants';
 
+export interface TimerClock {
+  now(): number;
+}
+
+export interface TimerScheduler {
+  setTimeout(callback: () => void, delay: number): number;
+  clearTimeout(timer: number): void;
+}
+
 export class UrdTimerService {
   private timer: number | null = null;
   private overlayRestartTimeout: number | null = null;
-  private expectedTime: number = 0;
+  private sessionDeadline: number = 0;
   private timeLeft: number;
   private isRunning: boolean = false;
   private observers: UrdTimerObserver[] = [];
@@ -26,7 +35,12 @@ export class UrdTimerService {
     private messageService: MessageService,
     overlayMode: boolean = false,
     private audioService: AudioService | null = null,
-    private sessionHistory: SessionHistoryService | null = null
+    private sessionHistory: SessionHistoryService | null = null,
+    private clock: TimerClock = { now: () => Date.now() },
+    private scheduler: TimerScheduler = {
+      setTimeout: (callback, delay) => window.setTimeout(callback, delay),
+      clearTimeout: (timer) => window.clearTimeout(timer),
+    }
   ) {
     this.overlayMode = overlayMode;
     const settings = this.settingsManager.loadSettings();
@@ -129,34 +143,38 @@ export class UrdTimerService {
   start() {
     if (!this.isRunning) {
       this.isRunning = true;
-      this.expectedTime = Date.now() + 1000;
+      this.sessionDeadline = this.clock.now() + this.timeLeft * 1000;
       this.scheduleTick();
     }
   }
 
   private scheduleTick(): void {
-    const delay = Math.max(0, this.expectedTime - Date.now());
-    this.timer = window.setTimeout(() => this.tick(), delay);
+    const delay = Math.min(1000, Math.max(0, this.sessionDeadline - this.clock.now()));
+    this.timer = this.scheduler.setTimeout(() => this.tick(), delay);
   }
 
   private tick(): void {
     if (!this.isRunning) return;
-    this.timeLeft--;
-    if (this.timeLeft <= 0) {
+
+    if (this.clock.now() >= this.sessionDeadline) {
       this.switchMode();
+    } else {
+      this.timeLeft = Math.max(1, Math.ceil((this.sessionDeadline - this.clock.now()) / 1000));
+      this.notifyObservers();
     }
-    this.notifyObservers();
-    this.expectedTime += 1000;
-    this.scheduleTick();
+
+    if (this.isRunning) {
+      this.scheduleTick();
+    }
   }
 
   private pause() {
-    if (this.timer) {
-      window.clearTimeout(this.timer);
+    if (this.timer !== null) {
+      this.scheduler.clearTimeout(this.timer);
       this.timer = null;
     }
-    if (this.overlayRestartTimeout) {
-      window.clearTimeout(this.overlayRestartTimeout);
+    if (this.overlayRestartTimeout !== null) {
+      this.scheduler.clearTimeout(this.overlayRestartTimeout);
       this.overlayRestartTimeout = null;
     }
     this.isRunning = false;
@@ -191,16 +209,18 @@ export class UrdTimerService {
       this.currentSession = SessionType.Work;
       this.timeLeft = this.workDuration;
     }
+    this.sessionDeadline = this.clock.now() + this.timeLeft * 1000;
     this.notifyObservers();
     this.notifyUser();
     this.audioService?.playNotification(this.currentSession);
 
     // Auto-start next session in overlay mode after 5 seconds
     if (this.overlayMode) {
-      if (this.overlayRestartTimeout) {
-        window.clearTimeout(this.overlayRestartTimeout);
+      this.isRunning = false;
+      if (this.overlayRestartTimeout !== null) {
+        this.scheduler.clearTimeout(this.overlayRestartTimeout);
       }
-      this.overlayRestartTimeout = window.setTimeout(() => {
+      this.overlayRestartTimeout = this.scheduler.setTimeout(() => {
         this.overlayRestartTimeout = null;
         this.start();
       }, 5000);

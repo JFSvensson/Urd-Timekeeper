@@ -23,7 +23,9 @@ jest.mock('../../../src/components/urd-timer/UrdUIService', () => {
           _uiRenderer: unknown,
           _domHandler: unknown
         ) => ({
-          initialize: jest.fn().mockResolvedValue(undefined),
+          initialize: jest
+            .fn<() => Promise<void>>()
+            .mockImplementation(async () => undefined as never),
           addButtonListeners: jest.fn(),
           addSettingsEventListeners: jest.fn(),
           removeKeyboardListener: jest.fn(),

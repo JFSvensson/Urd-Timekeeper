@@ -170,12 +170,14 @@ export class UrdTimer extends HTMLElement {
     const container = this.shadowRoot.querySelector('#player-container');
     if (!container) return;
 
-    const player = new Player();
-    container.appendChild(player);
+    const player = container.querySelector('urd-player') ?? new Player();
+    if (!player.parentElement) {
+      container.appendChild(player);
+    }
 
     const audioService = this.timerService.getAudioService();
     if (audioService) {
-      player.setAudioService(audioService);
+      (player as Player).setAudioService(audioService);
     }
   }
 }
