@@ -56,6 +56,13 @@ npm run serve
 Open `http://localhost:8000/` once while online, then use the browser's
 offline mode to verify that the app shell still loads.
 
+For browser smoke tests, install Chromium once and run:
+
+```bash
+npx playwright install chromium
+npm run test:e2e
+```
+
 ## Overlay Mode for Video Production
 
 Urd Timekeeper includes a special **overlay mode** designed for creating ambient Pomodoro focus videos for YouTube and other platforms. The overlay displays only a minimalist animated circle with transparent background, perfect for layering over ambient footage in video editing software.

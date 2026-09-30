@@ -57,15 +57,14 @@ npm run quality:gate
 
 - [x] Service worker implemented and registered
 - [x] Offline app shell is configured for the main timer and overlay
-- [ ] E2E smoke tests pass in CI
-- [ ] Release gate includes lint, format, unit tests, build, and E2E
+- [x] E2E smoke tests pass in CI
+- [x] Release gate includes lint, format, unit tests, build, and E2E
 
 ### Suggested Verification
 
 ```bash
 npm run quality:gate
-# plus E2E command when configured, for example:
-# npm run test:e2e
+npm run test:e2e
 ```
 
 ### Manual PWA Verification

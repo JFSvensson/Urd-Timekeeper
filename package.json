@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "jest",
+    "test:e2e": "npm run build && playwright test",
     "build": "tsc && vite build",
     "quality:gate": "npm run lint && npm run format:check && npm test && npm run build && npm run check:dist",
     "check:dist": "node scripts/check-dist.mjs",
@@ -34,6 +35,7 @@
   "homepage": "https://github.com/JFSvensson/Urd-Timekeeper",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.63.0",
     "@types/jest": "^30.0.0",
     "eslint": "^10.0.3",
     "eslint-config-prettier": "^10.1.8",
