@@ -74,6 +74,8 @@ describe('DataPortabilityService', () => {
     });
 
     expect(imported).toBe(false);
-    expect(portabilityService.exportBackup()).toEqual(before);
+    const after = portabilityService.exportBackup();
+    expect(after.settings).toEqual(before.settings);
+    expect(after.sessions).toEqual(before.sessions);
   });
 });

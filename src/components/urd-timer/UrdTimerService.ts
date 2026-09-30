@@ -5,6 +5,7 @@ import { AudioService } from '../../services/AudioService';
 import { SessionHistoryService } from '../../services/SessionHistoryService';
 import { DataPortabilityService, TimerBackup } from '../../services/DataPortabilityService';
 import { UrdSettingsManager } from './UrdSettingsManager';
+import { advanceSession } from './UrdSessionStateMachine';
 import { SECONDS_PER_MINUTE } from './UrdConstants';
 
 export interface TimerClock {
@@ -206,17 +207,21 @@ export class UrdTimerService {
     // Record the completed session before switching
     this.recordCompletedSession();
 
-    this.completedSessions++;
-    if (this.currentSession === SessionType.Work) {
-      if (this.completedSessions % this.shortBreaksBeforeLong === 0) {
-        this.currentSession = SessionType.LongBreak;
-        this.timeLeft = this.longBreakDuration;
-      } else {
-        this.currentSession = SessionType.ShortBreak;
-        this.timeLeft = this.shortBreakDuration;
-      }
+    const nextState = advanceSession(
+      {
+        currentSession: this.currentSession,
+        completedSessions: this.completedSessions,
+      },
+      this.shortBreaksBeforeLong
+    );
+    this.currentSession = nextState.currentSession;
+    this.completedSessions = nextState.completedSessions;
+
+    if (this.currentSession === SessionType.LongBreak) {
+      this.timeLeft = this.longBreakDuration;
+    } else if (this.currentSession === SessionType.ShortBreak) {
+      this.timeLeft = this.shortBreakDuration;
     } else {
-      this.currentSession = SessionType.Work;
       this.timeLeft = this.workDuration;
     }
     this.sessionDeadline = this.clock.now() + this.timeLeft * 1000;
