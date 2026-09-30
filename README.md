@@ -15,7 +15,7 @@ Urd Timekeeper is a Pomodoro timer web application that helps you manage your ti
 - ✅ Session statistics (today, this week, all time)
 - ✅ Dark mode support, ARIA improvements, and responsive layout
 - ✅ Overlay mode for video production workflows
-- ✅ PWA foundation (manifest + favicon)
+- ✅ Installable PWA with manifest, favicon, and offline app shell
 
 ## Installation
 
@@ -26,6 +26,28 @@ Urd Timekeeper is a Pomodoro timer web application that helps you manage your ti
 ## Usage
 
 Visit `http://localhost:5173` in your web browser to use Urd Timekeeper.
+
+### Static Deployment and Offline Use
+
+Build the application for static hosting:
+
+```bash
+npm run build
+```
+
+Deploy the contents of `dist/` to any static host. The build uses relative asset
+paths, so it can be served from a domain root or a subdirectory such as a
+GitHub Pages project site. The service worker caches the app shell after the
+first visit and provides an offline fallback for the main timer and overlay.
+
+For local verification of the production build:
+
+```bash
+npm run serve
+```
+
+Open `http://localhost:8000/` once while online, then use the browser's
+offline mode to verify that the app shell still loads.
 
 ## Overlay Mode for Video Production
 

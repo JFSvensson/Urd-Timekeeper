@@ -55,8 +55,8 @@ npm run quality:gate
 
 ### Acceptance Criteria
 
-- [ ] Service worker implemented and registered
-- [ ] Offline app shell works after first visit
+- [x] Service worker implemented and registered
+- [x] Offline app shell is configured for the main timer and overlay
 - [ ] E2E smoke tests pass in CI
 - [ ] Release gate includes lint, format, unit tests, build, and E2E
 
@@ -67,6 +67,14 @@ npm run quality:gate
 # plus E2E command when configured, for example:
 # npm run test:e2e
 ```
+
+### Manual PWA Verification
+
+- [ ] Serve `dist/` over HTTP and open the app once while online
+- [ ] Confirm `service-worker.js` is registered in browser developer tools
+- [ ] Disable the network and reload the main timer
+- [ ] Disable the network and reload `overlay.html`
+- [ ] Verify that a subdirectory deployment resolves assets correctly
 
 ## v1.2 - Product Expansion (Post-Stability)
 
