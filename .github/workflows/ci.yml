@@ -39,6 +39,9 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Check production artifacts
+        run: npm run check:dist
+
       - name: Upload coverage report
         if: always()
         uses: actions/upload-artifact@v4

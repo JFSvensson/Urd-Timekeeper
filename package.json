@@ -7,7 +7,8 @@
   "scripts": {
     "test": "jest",
     "build": "tsc && vite build",
-    "quality:gate": "npm run lint && npm run format:check && npm test && npm run build",
+    "quality:gate": "npm run lint && npm run format:check && npm test && npm run build && npm run check:dist",
+    "check:dist": "node scripts/check-dist.mjs",
     "preview": "vite preview",
     "dev": "vite",
     "serve": "npx http-server dist -p 8000 --cors -o /overlay.html",
