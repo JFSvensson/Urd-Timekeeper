@@ -40,6 +40,13 @@ paths, so it can be served from a domain root or a subdirectory such as a
 GitHub Pages project site. The service worker caches the app shell after the
 first visit and provides an offline fallback for the main timer and overlay.
 
+### GitHub Pages
+
+The repository includes a deployment workflow at `.github/workflows/deploy-pages.yml`.
+To enable it, set the repository's Pages source to **GitHub Actions** under
+**Settings > Pages**. Every push to `main` then runs the quality gate and deploys
+the resulting `dist/` folder.
+
 For local verification of the production build:
 
 ```bash
