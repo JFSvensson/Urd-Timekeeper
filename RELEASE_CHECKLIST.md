@@ -81,5 +81,5 @@ npm run test:e2e
 
 - [ ] i18n foundation
 - [x] Export/import settings and session history
-- [ ] Visual regression tests
+- [x] Visual regression tests
 - [ ] Additional UX polish and optional feature expansion
