@@ -7,7 +7,6 @@ export class WebPageMessageService implements MessageService {
 
   constructor() {
     this.createMessageElement();
-    this.requestNotificationPermission();
   }
 
   private createMessageElement() {
@@ -25,7 +24,7 @@ export class WebPageMessageService implements MessageService {
     document.body.appendChild(this.messageElement);
   }
 
-  private requestNotificationPermission(): void {
+  requestPermission(): void {
     if (!('Notification' in window)) {
       return;
     }
@@ -92,7 +91,6 @@ export class WebPageMessageService implements MessageService {
       this.showNotificationHint(
         'Webblasarnotiser ar inte aktiverade an. Timern visar fortsatt notiser i appen.'
       );
-      this.requestNotificationPermission();
       return;
     }
 

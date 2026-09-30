@@ -142,6 +142,7 @@ export class UrdTimerService {
 
   start() {
     if (!this.isRunning) {
+      this.messageService.requestPermission?.();
       this.isRunning = true;
       this.sessionDeadline = this.clock.now() + this.timeLeft * 1000;
       this.scheduleTick();

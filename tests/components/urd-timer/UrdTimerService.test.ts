@@ -35,6 +35,8 @@ class MockStorageService implements StorageService {
 }
 
 class MockMessageService implements MessageService {
+  requestPermission = jest.fn();
+
   showMessage(_message: string): void {
     // Intentionally no-op in tests to avoid noisy console output.
   }
@@ -150,6 +152,12 @@ describe('UrdTimerService', () => {
 
     timerService.toggle();
     expect(timerService.getIsRunning()).toBe(false);
+  });
+
+  test('should request notification permission when starting', () => {
+    timerService.start();
+
+    expect(mockMessageService.requestPermission).toHaveBeenCalledTimes(1);
   });
 
   test('should track time left during timer countdown', () => {

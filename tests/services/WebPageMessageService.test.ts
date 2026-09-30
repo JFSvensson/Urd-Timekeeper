@@ -68,7 +68,12 @@ describe('WebPageMessageService', () => {
     expect(() => webPageMessageService.showMessage('Test')).not.toThrow();
   });
 
-  test('should request notification permission on construction', () => {
+  test('should not request notification permission on construction', () => {
+    expect((window as any).Notification.requestPermission).not.toHaveBeenCalled();
+  });
+
+  test('should request notification permission explicitly', () => {
+    webPageMessageService.requestPermission();
     expect((window as any).Notification.requestPermission).toHaveBeenCalled();
   });
 
@@ -104,10 +109,11 @@ describe('WebPageMessageService', () => {
     expect(service).toBeDefined();
   });
 
-  test('should show UI hint when notifications are denied at startup', () => {
+  test('should show UI hint when notification permission is denied explicitly', () => {
     (window as any).Notification.permission = 'denied';
 
     const service = new WebPageMessageService();
+    service.requestPermission();
 
     expect(service['messageElement']?.textContent).toContain('Webblasarnotiser ar avstangda');
   });
@@ -117,6 +123,7 @@ describe('WebPageMessageService', () => {
     (window as any).Notification.requestPermission = jest.fn().mockResolvedValue('denied');
 
     const service = new WebPageMessageService();
+    service.requestPermission();
     await flushPromises();
 
     expect(service['messageElement']?.textContent).toContain('Webblasarnotiser nekades');
@@ -129,6 +136,7 @@ describe('WebPageMessageService', () => {
     );
 
     const service = new WebPageMessageService();
+    service.requestPermission();
     service.showMessage('Test');
 
     expect(service['messageElement']?.textContent).toContain(
