@@ -28,6 +28,22 @@ Urd Timekeeper is a Pomodoro timer web application that helps you manage your ti
 
 Visit `http://localhost:5173` in your web browser to use Urd Timekeeper.
 
+### Quality Checks
+
+Run the standard quality gate:
+
+```bash
+npm run quality:gate
+```
+
+Run browser smoke and visual regression tests separately after installing
+Chromium:
+
+```bash
+npx playwright install chromium
+npm run test:e2e
+```
+
 ### Static Deployment and Offline Use
 
 Build the application for static hosting:
@@ -286,11 +302,11 @@ Focus: stabilize current feature set and align docs/release process.
 
 Acceptance criteria:
 
-- [ ] README, feature list, and roadmap are synchronized with implemented functionality
-- [ ] Release checklist is documented and usable by maintainers
-- [ ] Quality gate passes locally: `npm run quality:gate`
-- [ ] Browser smoke tests executed for main timer and overlay mode
-- [ ] Accessibility smoke checks completed (keyboard flow + visible focus + live region updates)
+- [x] README, feature list, and roadmap are synchronized with implemented functionality
+- [x] Release checklist is documented and usable by maintainers
+- [x] Quality gate passes locally: `npm run quality:gate`
+- [x] Browser smoke tests cover the main timer, overlay, persistence, and offline shell
+- [ ] Accessibility smoke checks completed manually (keyboard flow + visible focus + live region updates)
 
 ### v1.1 - PWA and Quality Expansion
 
@@ -298,10 +314,10 @@ Focus: offline-readiness and stronger confidence before wider rollout.
 
 Acceptance criteria:
 
-- [ ] Service worker added and registered
-- [ ] Offline app shell behavior validated after first load
-- [ ] E2E smoke tests cover timer flow, settings persistence, and overlay query params
-- [ ] CI includes E2E gate for release branches/tags
+- [x] Service worker added and registered
+- [x] Offline app shell behavior is covered after first load
+- [x] E2E smoke tests cover timer flow, settings persistence, overlay, and offline reload
+- [x] CI includes the E2E gate
 
 ### v1.2 - Product Expansion
 
@@ -310,15 +326,15 @@ Focus: non-blocking enhancements after stability milestones.
 Candidate scope:
 
 - [ ] i18n foundation
-- [ ] Session history export/import
-- [ ] Visual regression tests
+- [x] Settings and session history export/import
+- [x] Visual regression tests
 - [ ] Optional advanced UX improvements
 
 ## Updated Roadmap (Short Form)
 
-1. Documentation and release hardening (v1.0.1)
-2. Offline + E2E confidence layer (v1.1)
-3. Product expansion backlog (v1.2)
+1. Manual accessibility and cross-browser verification
+2. i18n foundation, if additional languages are required
+3. Optional advanced UX improvements
 
 See `RELEASE_CHECKLIST.md` for release gates and verification steps.
 

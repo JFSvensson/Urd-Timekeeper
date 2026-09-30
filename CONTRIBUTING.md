@@ -30,6 +30,15 @@ This section guides you through submitting an enhancement suggestion for Urd Tim
 - Document new code based on the Documentation Styleguide
 - End all files with a newline
 
+### Local Development Workflow
+
+- Use Node.js 22 or newer.
+- Install dependencies with `npm ci` for a clean, locked install.
+- Run `npm run quality:gate` before opening a pull request.
+- Run `npx playwright install chromium` once before `npm run test:e2e`.
+- Update visual baselines only when a UI change is intentional:
+  `npx playwright test --update-snapshots`.
+
 ## Styleguides
 
 ### Git Commit Messages
@@ -39,13 +48,10 @@ This section guides you through submitting an enhancement suggestion for Urd Tim
 - Limit the first line to 72 characters or less
 - Reference issues and pull requests liberally after the first line
 
-### JavaScript Styleguide
+### Code Style
 
-All JavaScript must adhere to [JavaScript Standard Style](https://standardjs.com/).
-
-### TypeScript Styleguide
-
-All TypeScript must adhere to [TypeScript Standard Style](https://github.com/standard/ts-standard).
+TypeScript and JavaScript are checked with ESLint and formatted with Prettier.
+Run `npm run lint` and `npm run format:check` to check them directly.
 
 ## Additional Notes
 

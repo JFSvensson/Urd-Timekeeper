@@ -12,10 +12,10 @@ This checklist is used to validate release readiness and improve repeatability.
 
 ### Acceptance Criteria
 
-- [ ] README reflects current feature set
-- [ ] Release milestones and roadmap are documented
-- [ ] Local quality gate passes: `npm run quality:gate`
-- [ ] Browser smoke tests pass for main timer and overlay mode
+- [x] README reflects current feature set
+- [x] Release milestones and roadmap are documented
+- [x] Local quality gate passes: `npm run quality:gate`
+- [x] Browser smoke tests pass for main timer, overlay, persistence, and offline mode
 - [ ] Accessibility smoke checks pass
 
 ### Verification Commands
@@ -74,6 +74,12 @@ npm run test:e2e
 - [ ] Disable the network and reload the main timer
 - [ ] Disable the network and reload `overlay.html`
 - [ ] Verify that a subdirectory deployment resolves assets correctly
+
+### Browser Visual Regression
+
+- [x] Main timer baseline is checked in Chromium
+- [x] Overlay baseline is checked in Chromium
+- [ ] Review baseline changes intentionally when UI changes are made
 
 ## v1.2 - Product Expansion (Post-Stability)
 
