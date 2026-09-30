@@ -2,14 +2,14 @@
   "name": "Urd Timekeeper",
   "short_name": "Urd Timer",
   "description": "En pomodoro-timer med stöd för arbetspass, pauser och ljudnotiser",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#4caf50",
   "lang": "sv",
   "icons": [
     {
-      "src": "/favicon.svg",
+      "src": "./favicon.svg",
       "type": "image/svg+xml",
       "sizes": "any"
     }
