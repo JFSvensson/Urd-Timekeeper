@@ -146,6 +146,12 @@ button:active {
   box-shadow: var(--shadow-btn-active);
 }
 
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
 /* .settings base is handled by fieldset.settings at bottom */
 
 .settings label {
@@ -202,6 +208,17 @@ button:active {
 
 .progress-ring__circle.long-break {
   stroke: var(--color-session-long);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }
 
 /* Overlay Mode Styles */

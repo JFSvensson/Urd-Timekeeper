@@ -129,18 +129,21 @@ describe('UrdUIService', () => {
       uiService.update(90, false);
       const display = shadowRoot.querySelector('#time-display');
       expect(display?.textContent).toBe('01:30');
+      expect(display?.getAttribute('aria-label')).toBe('Återstående tid 1 minuter 30 sekunder');
     });
 
     it('should update start/stop button text when running', () => {
       uiService.update(1500, true);
       const button = shadowRoot.querySelector('#start-stop');
       expect(button?.textContent).toBe('Paus');
+      expect(button?.getAttribute('aria-label')).toBe('Pausa timer');
     });
 
     it('should update start/stop button text when paused', () => {
       uiService.update(1500, false);
       const button = shadowRoot.querySelector('#start-stop');
       expect(button?.textContent).toBe('Start');
+      expect(button?.getAttribute('aria-label')).toBe('Starta timer');
     });
 
     it('should update session info', () => {

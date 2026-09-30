@@ -8,7 +8,12 @@ export class UrdTimerDisplayService {
     const seconds = timeLeft % 60;
     const timeDisplay = this.shadowRoot.querySelector('#time-display');
     if (timeDisplay) {
-      timeDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      timeDisplay.textContent = formattedTime;
+      timeDisplay.setAttribute(
+        'aria-label',
+        `Återstående tid ${minutes} minuter ${seconds} sekunder`
+      );
     }
   }
 
@@ -16,6 +21,7 @@ export class UrdTimerDisplayService {
     const button = this.shadowRoot.querySelector('#start-stop');
     if (button) {
       button.textContent = isRunning ? 'Paus' : 'Start';
+      button.setAttribute('aria-label', isRunning ? 'Pausa timer' : 'Starta timer');
     }
   }
 
@@ -37,7 +43,10 @@ export class UrdTimerDisplayService {
           break;
       }
 
-      sessionInfo.textContent = `${sessionLabel} · Pomodoros: ${sessionCount}`;
+      const text = `${sessionLabel} · Pomodoros: ${sessionCount}`;
+      if (sessionInfo.textContent !== text) {
+        sessionInfo.textContent = text;
+      }
     }
   }
 
