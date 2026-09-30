@@ -12,6 +12,20 @@ export interface SessionStats {
   allTime: number;
 }
 
+export function isValidSessionRecord(session: unknown): session is SessionRecord {
+  if (!session || typeof session !== 'object') return false;
+
+  const record = session as Partial<SessionRecord>;
+  return (
+    (record.type === 'work' || record.type === 'shortBreak' || record.type === 'longBreak') &&
+    typeof record.durationMinutes === 'number' &&
+    Number.isFinite(record.durationMinutes) &&
+    record.durationMinutes > 0 &&
+    typeof record.completedAt === 'string' &&
+    !Number.isNaN(Date.parse(record.completedAt))
+  );
+}
+
 export class SessionHistoryService {
   private static readonly STORAGE_KEY = 'urdSessionHistory';
 
@@ -59,21 +73,7 @@ export class SessionHistoryService {
   }
 
   private static isValidHistory(history: unknown): history is SessionRecord[] {
-    return (
-      Array.isArray(history) &&
-      history.every((session) => {
-        if (!session || typeof session !== 'object') return false;
-        const record = session as Partial<SessionRecord>;
-        return (
-          (record.type === 'work' || record.type === 'shortBreak' || record.type === 'longBreak') &&
-          typeof record.durationMinutes === 'number' &&
-          Number.isFinite(record.durationMinutes) &&
-          record.durationMinutes > 0 &&
-          typeof record.completedAt === 'string' &&
-          !Number.isNaN(Date.parse(record.completedAt))
-        );
-      })
-    );
+    return Array.isArray(history) && history.every(isValidSessionRecord);
   }
 
   private loadHistory(): SessionRecord[] {

@@ -1,5 +1,9 @@
 import { TimerSettings, UrdSettingsManager } from '../components/urd-timer/UrdSettingsManager';
-import { SessionHistoryService, SessionRecord } from './SessionHistoryService';
+import {
+  isValidSessionRecord,
+  SessionHistoryService,
+  SessionRecord,
+} from './SessionHistoryService';
 
 export interface TimerBackup {
   version: 1;
@@ -40,21 +44,7 @@ export class DataPortabilityService {
       !Number.isNaN(Date.parse(backup.exportedAt)) &&
       this.settingsManager.isValidSettings(backup.settings) &&
       Array.isArray(backup.sessions) &&
-      backup.sessions.every((session) => this.isSessionRecord(session))
-    );
-  }
-
-  private isSessionRecord(session: unknown): session is SessionRecord {
-    if (!session || typeof session !== 'object') return false;
-
-    const record = session as Partial<SessionRecord>;
-    return (
-      (record.type === 'work' || record.type === 'shortBreak' || record.type === 'longBreak') &&
-      typeof record.durationMinutes === 'number' &&
-      Number.isFinite(record.durationMinutes) &&
-      record.durationMinutes > 0 &&
-      typeof record.completedAt === 'string' &&
-      !Number.isNaN(Date.parse(record.completedAt))
+      backup.sessions.every(isValidSessionRecord)
     );
   }
 }
